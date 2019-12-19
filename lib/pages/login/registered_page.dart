@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../services/screenAdaper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../config/service_method.dart';
+import '../widget/toast.dart';
+import '../../services/storage.dart';
 
 
 
@@ -16,7 +18,7 @@ class _RegisteredPageState extends State<RegisteredPage> {
 
   String _phone = '';
   String _code = '';
-  int seconds = 5;
+  int seconds = 60;
   bool isCode = true;
   // String _userPhone = TextEditingController();
 
@@ -39,7 +41,7 @@ class _RegisteredPageState extends State<RegisteredPage> {
         t.cancel();
         setState(() {
           isCode = true;
-          seconds = 5;
+          seconds = 60;
         });
       }
     });
@@ -50,49 +52,39 @@ class _RegisteredPageState extends State<RegisteredPage> {
   void sendCode(){
     RegExp reg = RegExp(r"^1\d{10}$");
     if(reg.hasMatch(_phone)){
-      _showTimer();
-      // apiMethod('homeList', 'get', '').then((res){
-      //   // var a = HomeModel.fromJson(res.data);
-      //   setState(() {
-      //     // homeList = a.data.bannerList;
-      //   });
-      //   print(res);
-      // });
+      apiMethod('captcha', 'post', {'Mobile': _phone, 'Type': 2}).then((res){
+        if(res.data['IsSuccess']){
+          _showTimer();
+          toast('发送成功！');
+        }else{
+          toast(res.data['Message']);
+        }
+      });
     }else{
-      Fluttertoast.showToast(
-        msg: "手机号格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+      toast('手机号格式错误！');
     }
     print(_phone);
   }
   
   // 注册
+  Timer time;
   void registereds(){
     RegExp reg = RegExp(r"\d{6}$");
     if(reg.hasMatch(_code)){
-      // apiMethod('homeList', 'get', '').then((res){
-      //   // var a = HomeModel.fromJson(res.data);
-      //   setState(() {
-      //     // homeList = a.data.bannerList;
-      //   });
-      //   print(res);
-      // });
-      Fluttertoast.showToast(
-        msg: "验证码格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+      apiMethod('quicklogin', 'post', {'Mobile': _phone, 'Captcha': _code}).then((res){
+        if(res.data['IsSuccess']){
+          toast('注册成功！');
+          Storage.setString('userinfo',  json.encode(res.data['Data']));
+          time = Timer(Duration(milliseconds:2000), (){
+            Navigator.pushNamed(context, '/setpassword');
+          });
+        }else{
+          toast(res.data['Message']);
+        }
+        print(res);
+      });
     }else{
-      Fluttertoast.showToast(
-        msg: "验证码格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+      toast('验证码格式错误！');
     }
     print(_code);
   }
@@ -153,7 +145,7 @@ class _RegisteredPageState extends State<RegisteredPage> {
                         width: ScreenAdaper.width(28), height: ScreenAdaper.height(30),
                         child: Image.asset('images/login_image06.png'),
                       ),
-                      Text('注册成功可获得10创币用于购买课程', style: TextStyle(fontSize: ScreenAdaper.size(24), color: Color(0xff7F7F7F)),),
+                      Text('注册成功可获得10牛币用于购买课程', style: TextStyle(fontSize: ScreenAdaper.size(24), color: Color(0xff7F7F7F)),),
                     ],
                   ),
                   SizedBox(height: ScreenAdaper.height(70),),

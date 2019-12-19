@@ -1,11 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../services/screenAdaper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../config/service_method.dart';
-
-
+import '../widget/toast.dart';
+import '../../services/storage.dart';
+import '../bottom_tab/bottom.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -16,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
 
   String _phone = '';
   String _code = '';
-  int seconds = 5;
+  int seconds = 60;
   bool isCode = true;
   // String _userPhone = TextEditingController();
 
@@ -39,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
         t.cancel();
         setState(() {
           isCode = true;
-          seconds = 5;
+          seconds = 60;
         });
       }
     });
@@ -50,49 +51,39 @@ class _LoginPageState extends State<LoginPage> {
   void sendCode(){
     RegExp reg = RegExp(r"^1\d{10}$");
     if(reg.hasMatch(_phone)){
-      _showTimer();
-      // apiMethod('homeList', 'get', '').then((res){
-      //   // var a = HomeModel.fromJson(res.data);
-      //   setState(() {
-      //     // homeList = a.data.bannerList;
-      //   });
-      //   print(res);
-      // });
+      apiMethod('captcha', 'post', {'Mobile': _phone, 'Type': 2}).then((res){
+        if(res.data['IsSuccess']){
+          _showTimer();
+          toast('发送成功！');
+        }else{
+          toast(res.data['Message']);
+        }
+      });
     }else{
-      Fluttertoast.showToast(
-        msg: "手机号格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+      toast('手机号格式错误！');
     }
     print(_phone);
   }
-  
-  // 注册
+
+  // 登录
+  Timer time;
   void logins(){
     RegExp reg = RegExp(r"\d{6}$");
     if(reg.hasMatch(_code)){
-      // apiMethod('homeList', 'get', '').then((res){
-      //   // var a = HomeModel.fromJson(res.data);
-      //   setState(() {
-      //     // homeList = a.data.bannerList;
-      //   });
-      //   print(res);
-      // });
-      Fluttertoast.showToast(
-        msg: "验证码格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+      apiMethod('quicklogin', 'post', {'Mobile': _phone, 'Captcha': _code}).then((res){
+        if(res.data['IsSuccess']){
+          toast('登录成功！');
+          Storage.setString('userinfo',  json.encode(res.data['Data']));
+          time = Timer(Duration(milliseconds:2000), (){
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BottomPage()), (route) => route == null);
+          });
+        }else{
+          toast(res.data['Message']);
+        }
+        print(res);
+      });
     }else{
-      Fluttertoast.showToast(
-        msg: "验证码格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+      toast('验证码格式错误！');
     }
     print(_code);
   }
@@ -137,6 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                       InkWell(
                         onTap: (){
                           Navigator.pushNamed(context, '/loginpassword');
+                          // Navigator.pushNamed(context, '/loginpassword', arguments: {'id':'asd'});
                         },
                         child: Text('密码登录', style: TextStyle(fontSize: ScreenAdaper.size(28), fontWeight: FontWeight.bold),),
                       )
@@ -146,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                     margin: EdgeInsetsDirectional.fromSTEB(0, ScreenAdaper.height(90), 0, ScreenAdaper.height(25)),
                     child: Text('欢迎登录', style: TextStyle(fontSize: ScreenAdaper.size(48), fontWeight: FontWeight.bold),),
                   ),
-                  Text('登录即可学习更多跨境知识！', style: TextStyle(fontSize: ScreenAdaper.size(24), color: Color(0xff7F7F7F)),),
+                  Text('登录即可享受专业的跨境服务！', style: TextStyle(fontSize: ScreenAdaper.size(24), color: Color(0xff7F7F7F)),),
                   SizedBox(height: ScreenAdaper.height(70),),
                   Stack(
                     children: <Widget>[

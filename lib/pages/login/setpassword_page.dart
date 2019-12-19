@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../services/screenAdaper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../config/service_method.dart';
+import '../widget/toast.dart';
+import '../../services/storage.dart';
+import '../bottom_tab/bottom.dart';
 
 
 
@@ -23,16 +25,30 @@ class _SetpasswordPageState extends State<SetpasswordPage> {
     
   }
 
-  setpasswords(){
-    if(_password == _passwords){
-
+  Timer time;
+  void setpasswords() async{
+    RegExp reg = RegExp(r"^(?:(?=.*[a-zA-Z])(?=.*[0-9])).{6,30}$");
+    if(reg.hasMatch(_password)){
+      if(_password == _passwords){
+        var userinfo = await Storage.getString('userinfo');
+        var _phone = json.decode(userinfo);
+        print(_phone['Mobile']);
+        apiMethod('setpwd', 'post', {'Account': _phone['Mobile'], 'Pwd': _password}).then((res){
+          if(res.data['IsSuccess']){
+            toast('设置成功！');
+            time = Timer(Duration(milliseconds:2000), (){
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BottomPage()), (route) => route == null);
+            });
+          }else{
+            toast(res.data['Message']);
+          }
+          print(res);
+        });
+      }else{
+        toast('两次密码输入不一致！');
+      }
     }else{
-      Fluttertoast.showToast(
-        msg: "手机号格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+      toast('密码至少6个字符，最多16个字符；必须包含数字和字母！');
     }
   }
 

@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -27,6 +27,16 @@ dependencies:
   fluttertoast: ^3.1.3
   flutter_swiper: ^1.1.6
   dio: ^3.0.4
+  flutter_easyrefresh: ^2.0.4
+  provider: ^3.2.0
+  # 本地存储
+  shared_preferences: ^0.5.4+8
+  # 加载弹窗
+  flutter_spinkit: ^4.1.0
+  # 视频播放
+  video_player: ^0.10.4
+  chewie: ^0.9.8+1
+  flutter_html_widget: ^0.0.2
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +75,9 @@ flutter:
    - images/home_image08.png
    - images/home_image09.png
    - images/home_image10.png
+   - images/home_image11.png
+   - images/home_image12.png
+   - images/home_image13.png
    - images/home_image14.png
    - images/home_image15.png
    - images/home_image16.png
@@ -74,6 +87,44 @@ flutter:
    - images/home_image20.png
    - images/home_image21.png
    - images/home_image22.png
+   - images/home_image23.png
+   - images/home_image24.png
+   - images/home_image25.png
+   - images/home_image26.png
+   - images/home_image28.png
+   - images/home_image29.png
+   - images/home_image32.png
+   - images/home_image33.png
+   - images/home_image34.png
+   - images/home_image35.png
+   - images/home_image36.png
+   - images/home_image37.png
+   - images/home_image38.png
+   - images/home_image39.png
+   - images/home_image40.png
+   - images/home_image41.png
+   - images/home_image42.png
+   - images/home_image43.png
+   - images/home_image44.png
+   - images/home_image45.png
+   - images/home_image46.png
+   - images/home_image47.png
+   - images/home_image48.png
+   - images/home_image49.png
+   - images/home_image50.png
+   - images/home_image51.png
+   - images/home_image52.png
+   - images/home_image53.png
+   - images/home_image54.png
+   - images/home_image55.png
+   - images/home_image58.png
+   - images/home_image59.png
+   - images/home_image60.png
+   - images/home_image62.png
+   - images/Lack_image01.png
+   - images/kuajinggonglve_image27.png
+   - images/close_image30.png
+   - images/close_image31.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

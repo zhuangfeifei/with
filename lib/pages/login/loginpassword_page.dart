@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../services/screenAdaper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../config/service_method.dart';
+import '../widget/toast.dart';
+import '../../services/storage.dart';
+import '../bottom_tab/bottom.dart';
 
 
 
@@ -26,32 +29,25 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
   }
 
   
-  // 注册
+  // 密码登录
+  Timer time;
   void logins(){
-    RegExp reg = RegExp(r"\d{6}$");
-    if(reg.hasMatch(_password)){
-      // apiMethod('homeList', 'get', '').then((res){
-      //   // var a = HomeModel.fromJson(res.data);
-      //   setState(() {
-      //     // homeList = a.data.bannerList;
-      //   });
-      //   print(res);
-      // });
-      Fluttertoast.showToast(
-        msg: "验证码格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+    RegExp reg = RegExp(r"^1\d{10}$");
+    if(reg.hasMatch(_phone)){
+      apiMethod('login', 'post', {'Account': _phone, 'Pwd': _password}).then((res){
+        if(res.data['IsSuccess']){
+          Storage.setString('userinfo',  json.encode(res.data['Data']));
+          time = Timer(Duration(milliseconds:2000), (){
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BottomPage()), (route) => route == null);
+          });
+        }else{
+          toast(res.data['Message']);
+        }
+      });
     }else{
-      Fluttertoast.showToast(
-        msg: "验证码格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+      toast('手机号格式错误！');
     }
-    print(_password);
+    print(_phone);
   }
 
 
@@ -84,11 +80,11 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
                     children: <Widget>[
                       InkWell(
                         onTap: (){
-                          Navigator.pop(context);
+                          Navigator.pushNamed(context, '/');
                         },
                         child: Container(
                           width: ScreenAdaper.width(30), height: ScreenAdaper.width(30),
-                          child: Image.asset('images/login_image05.png'),
+                          child: Image.asset('images/login_image04.png'),
                         ),
                       ),
                       InkWell(
@@ -103,7 +99,7 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
                     margin: EdgeInsetsDirectional.fromSTEB(0, ScreenAdaper.height(90), 0, ScreenAdaper.height(25)),
                     child: Text('欢迎登录', style: TextStyle(fontSize: ScreenAdaper.size(48), fontWeight: FontWeight.bold),),
                   ),
-                  Text('登录即可学习更多跨境知识！', style: TextStyle(fontSize: ScreenAdaper.size(24), color: Color(0xff7F7F7F)),),
+                  Text('登录即可享受专业的跨境服务！', style: TextStyle(fontSize: ScreenAdaper.size(24), color: Color(0xff7F7F7F)),),
                   SizedBox(height: ScreenAdaper.height(70),),
                   Stack(
                     children: <Widget>[
@@ -174,9 +170,7 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
                   Opacity(
                     opacity: _phone!='' && _password!='' ? 1 : 0.6,
                     child: InkWell(
-                      onTap: (){
-                        
-                      },
+                      onTap: logins,
                       child: Container(
                         width: double.infinity, height: ScreenAdaper.height(96),
                         decoration: BoxDecoration(
@@ -195,7 +189,7 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
                     width: double.infinity, margin: EdgeInsets.only(top: ScreenAdaper.height(40)),
                     child: InkWell(
                       onTap: (){
-                        Navigator.pushNamed(context, '/forgotpassword');
+                        Navigator.pushReplacementNamed(context, '/forgotpassword');
                       },
                       child: Text('忘记密码', 
                         style: TextStyle(

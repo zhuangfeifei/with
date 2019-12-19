@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../services/screenAdaper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../config/service_method.dart';
+import '../widget/toast.dart';
+import '../../services/storage.dart';
 
 
 
@@ -16,7 +18,7 @@ class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
 
   String _phone = '';
   String _code = '';
-  int seconds = 5;
+  int seconds = 60;
   bool isCode = true;
 
   @override
@@ -38,7 +40,7 @@ class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
         t.cancel();
         setState(() {
           isCode = true;
-          seconds = 5;
+          seconds = 60;
         });
       }
     });
@@ -49,49 +51,36 @@ class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
   void sendCode(){
     RegExp reg = RegExp(r"^1\d{10}$");
     if(reg.hasMatch(_phone)){
-      _showTimer();
-      // apiMethod('homeList', 'get', '').then((res){
-      //   // var a = HomeModel.fromJson(res.data);
-      //   setState(() {
-      //     // homeList = a.data.bannerList;
-      //   });
-      //   print(res);
-      // });
+      apiMethod('captcha', 'post', {'Mobile': _phone, 'Type': 2}).then((res){
+        if(res.data['IsSuccess']){
+          _showTimer();
+          toast('发送成功！');
+        }else{
+          toast(res.data['Message']);
+        }
+      });
     }else{
-      Fluttertoast.showToast(
-        msg: "手机号格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+      toast('手机号格式错误！');
     }
     print(_phone);
   }
-  
-  // 注册
+
+  // 验证
+  Timer time;
   void logins(){
     RegExp reg = RegExp(r"\d{6}$");
     if(reg.hasMatch(_code)){
-      // apiMethod('homeList', 'get', '').then((res){
-      //   // var a = HomeModel.fromJson(res.data);
-      //   setState(() {
-      //     // homeList = a.data.bannerList;
-      //   });
-      //   print(res);
-      // });
-      Fluttertoast.showToast(
-        msg: "验证码格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+      apiMethod('quicklogin', 'post', {'Mobile': _phone, 'Captcha': _code}).then((res){
+        if(res.data['IsSuccess']){
+          Storage.setString('userinfo',  json.encode(res.data['Data']));
+          Navigator.pushNamed(context, '/setnewpassword');
+        }else{
+          toast(res.data['Message']);
+        }
+        print(res);
+      });
     }else{
-      Fluttertoast.showToast(
-        msg: "验证码格式错误",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 3
-      );
+      toast('验证码格式错误！');
     }
     print(_code);
   }

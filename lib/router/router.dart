@@ -6,12 +6,22 @@ import '../pages/login/setpassword_page.dart';
 import '../pages/login/login_page.dart';
 import '../pages/login/loginpassword_page.dart';
 import '../pages/login/forgotpassword_page.dart';
+import '../pages/login/setnewpassword_page.dart';
 
 import '../pages/bottom_tab/bottom.dart';
 
 import '../pages/home/home_page.dart';
+import '../pages/home/search_page.dart';
+import '../pages/home/strategy_page.dart';
+import '../pages/home/classification_page.dart';
+import '../pages/home/watchcourse_page.dart';
+import '../pages/home/pay_page.dart';
+import '../pages/home/recharge_page.dart';
 
 import '../pages/alreadybought/alreadybought_page.dart';
+
+import '../pages/my/my_page.dart';
+import '../pages/my/coupon_page.dart';
 
 final routes = {
   '/': (contxt) => StartPage(),
@@ -20,9 +30,18 @@ final routes = {
   '/login': (contxt) => LoginPage(),                  // 手机号登录
   '/loginpassword': (contxt) => LoginpasswordPage(),  // 密码登录
   '/forgotpassword': (contxt) => ForgotpasswordPage(), // 忘记密码
+  '/setnewpassword': (contxt) => SetnewpasswordPage(), // 忘记密码
   '/home': (context, {arguments}) => HomePage(arguments: arguments),
+  '/search': (contxt) => SearchPage(), // 搜索
+  '/strategy': (contxt) => StrategyPage(), // 攻略
+  '/classification': (context, {arguments}) => ClassificationPage(arguments: arguments), // 课程分类
+  '/watchcourse': (context, {arguments}) => WatchcoursePage(arguments: arguments), // 观看课程
+  '/pay': (context, {arguments}) => PayPage(arguments: arguments), // 支付
+  '/recharge': (contxt) => RechargePage(), // 充值
   '/bottom': (contxt) => BottomPage(), // 
   '/alreadybought': (contxt) => AlreadyboughtPage(), // 已购
+  '/my': (contxt) => MyPage(), // 我的
+  '/coupon': (contxt) => CouponPage(), // 优惠券
 };
 
 var onGenerateRoute = (RouteSettings settings) {
