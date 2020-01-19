@@ -15,6 +15,9 @@ class ScreenAdaper{
     return ScreenUtil.getInstance().setSp(value);
   }
   static getScreenHeight(){
-    return ScreenUtil.screenHeightDp;
+    return ScreenUtil.screenHeight;
+  }
+  static getStatusBarHeight(){
+    return ScreenUtil.statusBarHeight;
   }
 }

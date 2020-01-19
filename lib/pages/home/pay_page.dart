@@ -1,18 +1,98 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:with_me/config/service_method.dart';
 import '../../services/screenAdaper.dart';
+import 'package:provider/provider.dart';
+import '../../provider/courseDetails.dart';
+import '../../model/watchcourse_model.dart';
+import '../../model/coupon_model.dart';
+import '../../services/storage.dart';
+import '../../services/convertNum.dart';
+import '../widget/toast.dart';
+import '../widget/dialog.dart';
+import '../bottom_tab/bottom.dart';
+import '../../services/userinfo.dart';
 
 class PayPage extends StatefulWidget {
-
-  var arguments;
-  PayPage({this.arguments});
-
   @override
   _PayPageState createState() => _PayPageState();
 }
 
 class _PayPageState extends State<PayPage> {
+
+  var _userName = '';
+  int _balance = 0;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    getUser();
+  }
+
+  void getUser()async{
+    var userinfo = await Storage.getString('userinfo');
+    setState((){
+      _userName = json.decode(userinfo)['UserName'];
+      _balance = json.decode(userinfo)['Balance'];
+      print(_balance);
+    });
+  }
+
+
+  Timer time;
+  void pay(goodsId, couponId){
+    ProgressDialog.showProgress(context);
+    apiMethod('createorder', 'post', {'GoodsId': goodsId, 'PayType': 3, 'UserCouponId': couponId, 'GoodsType': 1}).then((res){
+      ProgressDialog.dismiss(context);
+      if(res.data['IsSuccess']){
+        toast('支付成功！');
+        getUserinfoMethod();
+        time = Timer(Duration(milliseconds:1000), (){
+          Navigator.pushReplacementNamed(context, '/watchcourse', arguments: {'collegeId': goodsId});
+        });
+      }else{
+        toast(res.data['Message']);
+      }
+    });
+  }
+
+
+  // 弹出对话框
+  Future<bool> showDeleteConfirmDialog1() {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("提示"),
+          content: Text("您确定要删除当前文件吗?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("取消"),
+              onPressed: () => Navigator.of(context).pop(), // 关闭对话框
+            ),
+            FlatButton(
+              child: Text("删除"),
+              onPressed: () {
+                //关闭对话框并返回true
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<CourseDetails>(context);
+    WatchcourseModel course = provider.courseDetails;
+    CouponModelData coupon = provider.couponItem;
+    int couponIndex = provider.couponIndex;
     return Scaffold(
       body: Container(
         color: Color(0xffF8F8F8),
@@ -39,7 +119,10 @@ class _PayPageState extends State<PayPage> {
                           onTap: (){
                             Navigator.pop(context);
                           },
-                          child: Image.asset('images/home_image28.png', width: ScreenAdaper.width(16), height: ScreenAdaper.height(30)),
+                          child: Container(
+                            width: ScreenAdaper.width(50), height: ScreenAdaper.height(30), alignment: Alignment.bottomLeft,
+                            child: Image.asset('images/home_image28.png', width: ScreenAdaper.width(16),)
+                          ),
                         ),
                       ),
                       Align(
@@ -52,7 +135,7 @@ class _PayPageState extends State<PayPage> {
                 SizedBox(height: ScreenAdaper.height(42),),
                 Container(
                   padding: EdgeInsets.only(left: ScreenAdaper.width(35)),
-                  child: Text('您好，爱学习的小杨：', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(32), fontWeight: FontWeight.bold),),
+                  child: Text('您好，爱学习的$_userName：', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(32), fontWeight: FontWeight.bold),),
                 ),
                 SizedBox(height: ScreenAdaper.height(36),),
                 // 课程
@@ -73,7 +156,7 @@ class _PayPageState extends State<PayPage> {
                             width: ScreenAdaper.width(162), height: ScreenAdaper.height(220),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(3),
-                              child: Image.network('http://img8.zol.com.cn/bbs/upload/23765/23764201.jpg', fit: BoxFit.fill,),
+                              child: Image.network('${course.data.teacherImg}', fit: BoxFit.fill,),
                             ),
                           ),
                           Positioned(
@@ -86,7 +169,7 @@ class _PayPageState extends State<PayPage> {
                                   image: AssetImage('images/home_image32.png'), alignment: Alignment.centerLeft, fit: BoxFit.fill,
                                 )
                               ),
-                              child: Text('456456', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(16)),),
+                              child: Text('${course.data.categoryIdrStr}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(16)),),
                             ),
                           )
                         ],
@@ -100,15 +183,15 @@ class _PayPageState extends State<PayPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text('Aellen老师揭晓学院年度大课的秘密', style: TextStyle(color: Color(0xff000000), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold), 
+                                  Text('${course.data.title}', style: TextStyle(color: Color(0xff000000), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold), 
                                     maxLines: 1, overflow: TextOverflow.ellipsis,
                                   ),
                                   SizedBox(height: ScreenAdaper.height(8),),
-                                  Text('严杰 • 阿里巴巴金牌讲师师', style: TextStyle(color: Color(0xff000000), fontSize: ScreenAdaper.size(20)), 
+                                  Text('${course.data.teacherName} • ${course.data.teacherTitle}', style: TextStyle(color: Color(0xff000000), fontSize: ScreenAdaper.size(20)), 
                                     maxLines: 1, overflow: TextOverflow.ellipsis,
                                   ),
                                   SizedBox(height: ScreenAdaper.height(15),),
-                                  Text('这个课程帮助一个人的人格完善完成帮助你更好的洞察能力，一个人的人格完善完成帮助你更好的洞察能嗯嗯问', style: TextStyle(color: Color(0xffA2A2A2), fontSize: ScreenAdaper.size(20), height: 1.25), 
+                                  Text('${course.data.description}', style: TextStyle(color: Color(0xffA2A2A2), fontSize: ScreenAdaper.size(20), height: 1.25), 
                                     maxLines: 2, overflow: TextOverflow.ellipsis, 
                                   ),
                                 ],
@@ -118,8 +201,8 @@ class _PayPageState extends State<PayPage> {
                               bottom: ScreenAdaper.height(10), left: 0,
                               child: Row(
                                 children: <Widget>[
-                                  Text('103课时 • ', style: TextStyle(color: Color(0xffA2A2A2), fontSize: ScreenAdaper.size(18))),
-                                  Text('￥1888', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(18))),
+                                  Text('${course.data.collegeClass.length}课时 • ', style: TextStyle(color: Color(0xffA2A2A2), fontSize: ScreenAdaper.size(18))),
+                                  Text('￥${convertNum(course.data.collegePrice)}', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(18))),
                                 ],
                               ),
                             )
@@ -136,29 +219,34 @@ class _PayPageState extends State<PayPage> {
                   decoration: BoxDecoration(
                     color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(6)
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Text('优惠券', style: TextStyle(color: Color(0xff090909), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold),), 
-                          Text('（已选推荐优惠券）', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(20), fontWeight: FontWeight.bold),)
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Text('-￥5', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(28)),),
-                          SizedBox(width: ScreenAdaper.width(15),),
-                          Text('>', style: TextStyle(color: Color(0xffC2C2C2), fontSize: ScreenAdaper.size(28)),),
-                        ],
-                      )
-                    ],
+                  child: InkWell(
+                    onTap: (){
+                      Navigator.pushNamed(context, '/coupon');
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Text('优惠券', style: TextStyle(color: Color(0xff090909), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold),), 
+                            Text('（已选推荐优惠券）', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(20), fontWeight: FontWeight.bold),)
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Text('-￥${coupon!=null&&couponIndex!=-1?convertNum(coupon.price):0}', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(28)),),
+                            SizedBox(width: ScreenAdaper.width(15),),
+                            Text('>', style: TextStyle(color: Color(0xffC2C2C2), fontSize: ScreenAdaper.size(28)),),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(height: ScreenAdaper.height(20),),
                 // 金额
-                Container(
+                _balance > course.data.collegePrice ? Container(
                   width: double.infinity, height: ScreenAdaper.height(86), padding: EdgeInsets.symmetric(horizontal: ScreenAdaper.width(34)),
                   decoration: BoxDecoration(
                     color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(6)
@@ -172,33 +260,37 @@ class _PayPageState extends State<PayPage> {
                           SizedBox(width: ScreenAdaper.width(27),),
                           Text('牛币', style: TextStyle(color: Color(0xff090909), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold),), 
                           SizedBox(width: ScreenAdaper.width(15),),
-                          Text('￥222220.00', style: TextStyle(color: Color(0xffC1C1C1), fontSize: ScreenAdaper.size(22)),),
+                          Text('￥${(convertNum(_balance))}', style: TextStyle(color: Color(0xffC1C1C1), fontSize: ScreenAdaper.size(22)),),
                         ],
                       ),
                       Image.asset('images/home_image55.png', width: ScreenAdaper.width(42)),
                     ],
                   ),
-                ),
-                SizedBox(height: ScreenAdaper.height(20),),
-                Container(
-                  width: double.infinity, height: ScreenAdaper.height(86), padding: EdgeInsets.symmetric(horizontal: ScreenAdaper.width(34)),
-                  decoration: BoxDecoration(
-                    color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(6)
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Image.asset('images/home_image53.png', width: ScreenAdaper.width(37), height: ScreenAdaper.height(46),),
-                          SizedBox(width: ScreenAdaper.width(27),),
-                          Text('牛币', style: TextStyle(color: Color(0xff090909), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold),), 
-                          SizedBox(width: ScreenAdaper.width(15),),
-                          Text('￥0.00（不足支付）', style: TextStyle(color: Color(0xffC1C1C1), fontSize: ScreenAdaper.size(22)),),
-                        ],
-                      ),
-                      Text('去充值', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold),)
-                    ],
+                ) :
+                InkWell(
+                  onTap: (){
+                    Navigator.pushNamed(context, '/recharge');
+                  },
+                  child: Container(
+                    width: double.infinity, height: ScreenAdaper.height(86), padding: EdgeInsets.symmetric(horizontal: ScreenAdaper.width(34)),
+                    decoration: BoxDecoration(
+                      color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(6)
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Image.asset('images/home_image53.png', width: ScreenAdaper.width(37), height: ScreenAdaper.height(46),),
+                            SizedBox(width: ScreenAdaper.width(27),),
+                            Text('牛币', style: TextStyle(color: Color(0xff090909), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold),), 
+                            SizedBox(width: ScreenAdaper.width(15),),
+                            Text('￥${convertNum(course.data.collegePrice)}（不足支付）', style: TextStyle(color: Color(0xffC1C1C1), fontSize: ScreenAdaper.size(22)),),
+                          ],
+                        ),
+                        Text('去充值', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold),)
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(height: ScreenAdaper.height(20),),
@@ -232,19 +324,44 @@ class _PayPageState extends State<PayPage> {
                     Row(
                       children: <Widget>[
                         Text('应付：', style: TextStyle(color: Color(0xff3B3B3B), fontSize: ScreenAdaper.size(26)),), 
-                        Text('￥194', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(34), fontWeight: FontWeight.bold),),
+                        Text('￥${convertNum(course.data.collegePrice - (coupon!=null&&couponIndex!=-1?coupon.price:0))}', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(34), fontWeight: FontWeight.bold),),
                       ],
                     ),
-                    Container(
-                      width: ScreenAdaper.width(194), height: ScreenAdaper.height(72),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xffFDB342), Color(0xffF36A37)]
+                    InkWell(
+                      onTap: (){
+                        showDialog<bool>(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text("提示"),
+                            content: Text("您确定要支付吗?"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text("取消"),
+                                onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                              ),
+                              FlatButton(
+                                child: Text("支付"),
+                                onPressed: () {
+                                  pay(course.data.id, coupon!=null&&couponIndex!=-1?coupon.id:'');
+                                  Navigator.of(context).pop(true); //关闭对话框
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                      },
+                      child: Container(
+                        width: ScreenAdaper.width(194), height: ScreenAdaper.height(72),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xffFDB342), Color(0xffF36A37)]
+                          ),
+                          borderRadius: BorderRadius.circular(30)
                         ),
-                        borderRadius: BorderRadius.circular(30)
-                      ),
-                      child: Center(
-                        child: Text('确认支付', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(28)),),
+                        child: Center(
+                          child: Text('确认支付', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(28)),),
+                        ),
                       ),
                     ),
                   ],

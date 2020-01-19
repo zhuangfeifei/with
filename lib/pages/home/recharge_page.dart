@@ -1,5 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:with_me/config/service_method.dart';
 import '../../services/screenAdaper.dart';
+import '../../services/storage.dart';
+import '../widget/toast.dart';
+import '../../services/userinfo.dart';
+
+import 'package:fluwx/fluwx.dart' as fluwx;
 
 class RechargePage extends StatefulWidget {
   @override
@@ -8,11 +15,55 @@ class RechargePage extends StatefulWidget {
 
 class _RechargePageState extends State<RechargePage> {
 
-  List _countList = ['8', '68', '118', '288', '388', '588'];
+  List _countList = [8, 68, 118, 288, 388, 588];
 
   int _tabIndex = -1;
 
-  bool _isWx = false;
+  bool _isWx = true;
+
+  var phones = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getPhone();
+
+    fluwx.responseFromPayment.listen((response){
+      print(response);
+      getUserinfoMethod();
+    });
+  }
+
+  void getPhone() async{
+    var userinfo = await Storage.getString('userinfo');
+    var phone = json.decode(userinfo)['Mobile'];
+    setState(() {
+      phones = phone;
+    });
+  }
+
+  void recharge(){
+    // 获取微信支付配置
+    apiMethod('wxcreateorder', 'post', {'GoodsId': _countList[_tabIndex]*100, 'PayType': 7, 'GoodsType': 3}).then((res){
+      // print(res.data);
+      if(res.data['IsSuccess']){
+        var result = res.data['Data']['PayExtend'].split(',');
+        fluwx.pay( 
+          appId: result[0], 
+          partnerId: result[1],
+          prepayId: result[2],
+          packageValue: 'Sign=WXPay',
+          nonceStr: result[3],
+          timeStamp: int.parse(result[5]),
+          sign: result[4],
+          signType: 'MD5',
+          extData: ''
+        );
+      }else{
+        toast(res.data['Message']);
+      }
+    });
+  }
 
 
   @override
@@ -43,7 +94,10 @@ class _RechargePageState extends State<RechargePage> {
                           onTap: (){
                             Navigator.pop(context);
                           },
-                          child: Image.asset('images/home_image28.png', width: ScreenAdaper.width(16), height: ScreenAdaper.height(30)),
+                          child: Container(
+                            width: ScreenAdaper.width(50), height: ScreenAdaper.height(30), alignment: Alignment.bottomLeft,
+                            child: Image.asset('images/home_image28.png', width: ScreenAdaper.width(16)),
+                          ),
                         ),
                       ),
                       Align(
@@ -66,7 +120,7 @@ class _RechargePageState extends State<RechargePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text('充值账号', style: TextStyle(color: Color(0xff090909), fontSize: ScreenAdaper.size(30), fontWeight: FontWeight.bold),),
-                      Text('18762739002', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(30), fontWeight: FontWeight.bold),),
+                      Text('$phones', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(30), fontWeight: FontWeight.bold),),
                     ],
                   ),
                 ),
@@ -120,29 +174,29 @@ class _RechargePageState extends State<RechargePage> {
                       SizedBox(width: ScreenAdaper.width(15),),
                       Text('支付方式：', style: TextStyle(color: Color(0xff090909), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold),),
                       SizedBox(width: ScreenAdaper.width(25),),
-                      InkWell(
-                        onTap: (){
-                          setState(() {
-                            _isWx = false;
-                          });
-                        },
-                        child: Container(
-                          width: ScreenAdaper.width(85),
-                          child: Stack(
-                            children: <Widget>[
-                              Opacity(
-                                opacity: _isWx?0.5:1,
-                                child: Image.asset('images/home_image60.png', width: ScreenAdaper.width(75),)
-                              ),
-                              Positioned(
-                                bottom: 0, right: 0,
-                                child: Image.asset('images/home_image5${_isWx?4:5}.png', width: ScreenAdaper.width(25),)
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: ScreenAdaper.width(48),),
+                      // InkWell(
+                      //   onTap: (){
+                      //     setState(() {
+                      //       _isWx = false;
+                      //     });
+                      //   },
+                      //   child: Container(
+                      //     width: ScreenAdaper.width(85),
+                      //     child: Stack(
+                      //       children: <Widget>[
+                      //         Opacity(
+                      //           opacity: _isWx?0.5:1,
+                      //           child: Image.asset('images/home_image60.png', width: ScreenAdaper.width(75),)
+                      //         ),
+                      //         Positioned(
+                      //           bottom: 0, right: 0,
+                      //           child: Image.asset('images/home_image5${_isWx?4:5}.png', width: ScreenAdaper.width(25),)
+                      //         )
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+                      // SizedBox(width: ScreenAdaper.width(48),),
                       InkWell(
                         onTap: (){
                           setState(() {
@@ -173,7 +227,7 @@ class _RechargePageState extends State<RechargePage> {
                     ],
                   ),
                 ),
-                SizedBox(height: ScreenAdaper.height(80),),
+                SizedBox(height: ScreenAdaper.height(60),),
                 Container(
                   padding: EdgeInsets.only(left: ScreenAdaper.width(15)),
                   child: Column(
@@ -182,12 +236,13 @@ class _RechargePageState extends State<RechargePage> {
                       Text('充值须知：', style: TextStyle(color: Color(0xff090909), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold),),
                       SizedBox(height: ScreenAdaper.height(30),),
                       Text('1、牛币可用于购买App内的所有课程；', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(24))),
-                      Text('2、牛币为虚拟币，充值后不会过期，不可提现或转赠他人；', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(24))),
+                      Text('2、牛币为虚拟货币，充值后不会过期，但是无法退还、转增、提现；', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(24))),
                       Text('3、1 人民币 = 1 牛币；', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(24))),
+                      Text('4、各个平台规则随时更新，请遵循最新的平台规则执行；', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(24))),
                       Text.rich(
                         TextSpan(
                           children: [
-                            TextSpan(text: '4、如有问题请致客服电话：', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(24))),
+                            TextSpan(text: '5、如有问题请致客服电话：', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(24))),
                             TextSpan(text: '18114433550', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(26))),
                           ]
                         )
@@ -208,16 +263,21 @@ class _RechargePageState extends State<RechargePage> {
                     BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.1), offset: Offset(4, 0), blurRadius: 3),
                   ]
                 ),
-                child: Container(
-                  width: double.infinity, height: ScreenAdaper.height(82),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xffFDB342), Color(0xffF36A37)]
+                child: InkWell(
+                  onTap: (){
+                    if(_isWx) recharge();
+                  },
+                  child: Container(
+                    width: double.infinity, height: ScreenAdaper.height(82),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xffFDB342), Color(0xffF36A37)]
+                      ),
+                      borderRadius: BorderRadius.circular(30)
                     ),
-                    borderRadius: BorderRadius.circular(30)
-                  ),
-                  child: Center(
-                    child: Text('确认支付', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(28)),),
+                    child: Center(
+                      child: Text('确认充值', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(28)),),
+                    ),
                   ),
                 ),
               ),

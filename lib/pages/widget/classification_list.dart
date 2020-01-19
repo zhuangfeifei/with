@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/screenAdaper.dart';
+import '../../services/convertNum.dart';
 
 class ClassificationList extends StatelessWidget {
 
@@ -18,7 +19,7 @@ class ClassificationList extends StatelessWidget {
               children: <Widget>[
                 InkWell(
                   onTap: (){
-                    Navigator.pushNamed(context, '/watchcourse');
+                    Navigator.pushNamed(context, '/watchcourse', arguments: {'collegeId': item.id});
                   },
                   child: Container(
                     padding: EdgeInsetsDirectional.fromSTEB(ScreenAdaper.width(20), ScreenAdaper.height(26), ScreenAdaper.width(20), ScreenAdaper.height(26)),
@@ -164,7 +165,7 @@ class ClassificationList extends StatelessWidget {
                   TextSpan(
                     children: [
                       TextSpan(text: '￥', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(16))),
-                      TextSpan(text: '${item.collegePrice/100}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(27))),
+                      TextSpan(text: '${convertNum(item.collegePrice)}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(27))),
                       TextSpan(text: '购买', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(16))),
                     ]
                   )

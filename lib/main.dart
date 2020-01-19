@@ -3,6 +3,8 @@ import 'package:with_me/router/router.dart';
 import './router/router.dart';
 import 'package:provider/provider.dart';
 import './provider/counter.dart';
+import './provider/courseDetails.dart';
+import './provider/liveListProvider.dart';
 
 void main()=>runApp(MyApp());
 
@@ -12,6 +14,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(builder: (_) => Counter()),
+        ChangeNotifierProvider(builder: (_) => CourseDetails()),
+        ChangeNotifierProvider(builder: (_) => LiveListProvider()),
       ],
       child: Container(
         child: MaterialApp(
@@ -20,7 +24,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primaryColor: Color(0xffFF8636),
           ),
-          initialRoute: '/coupon',
+          initialRoute: '/',
           onGenerateRoute: onGenerateRoute,
         ),
       ),

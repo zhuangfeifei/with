@@ -109,7 +109,10 @@ class _StrategyPageState extends State<StrategyPage> {
                               },
                               child: Container(
                                 padding: EdgeInsets.only(left: ScreenAdaper.width(30)),
-                                child: Image.asset('images/home_image28.png', width: ScreenAdaper.width(16), height: ScreenAdaper.height(30)),
+                                child: Container(
+                                  width: ScreenAdaper.width(50), height: ScreenAdaper.height(30), alignment: Alignment.bottomLeft,
+                                  child: Image.asset('images/home_image28.png', width: ScreenAdaper.width(16),)
+                                ),
                               ),
                             ),
                           ),

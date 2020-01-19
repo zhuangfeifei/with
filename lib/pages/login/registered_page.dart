@@ -6,6 +6,7 @@ import '../../services/screenAdaper.dart';
 import '../../config/service_method.dart';
 import '../widget/toast.dart';
 import '../../services/storage.dart';
+import '../../pages/widget/dialog.dart';
 
 
 
@@ -21,6 +22,8 @@ class _RegisteredPageState extends State<RegisteredPage> {
   int seconds = 60;
   bool isCode = true;
   // String _userPhone = TextEditingController();
+
+  FocusNode _commentFocus = FocusNode();
 
   @override
   void initState() { 
@@ -52,7 +55,9 @@ class _RegisteredPageState extends State<RegisteredPage> {
   void sendCode(){
     RegExp reg = RegExp(r"^1\d{10}$");
     if(reg.hasMatch(_phone)){
+      ProgressDialog.showProgress(context);
       apiMethod('captcha', 'post', {'Mobile': _phone, 'Type': 2}).then((res){
+        ProgressDialog.dismiss(context);
         if(res.data['IsSuccess']){
           _showTimer();
           toast('发送成功！');
@@ -67,17 +72,20 @@ class _RegisteredPageState extends State<RegisteredPage> {
   }
   
   // 注册
-  Timer time;
+  // Timer time;
   void registereds(){
+    _commentFocus.unfocus();    // 失去焦点
     RegExp reg = RegExp(r"\d{6}$");
     if(reg.hasMatch(_code)){
+      ProgressDialog.showProgress(context);
       apiMethod('quicklogin', 'post', {'Mobile': _phone, 'Captcha': _code}).then((res){
+        ProgressDialog.dismiss(context);
         if(res.data['IsSuccess']){
-          toast('注册成功！');
+          // toast('注册成功！');
           Storage.setString('userinfo',  json.encode(res.data['Data']));
-          time = Timer(Duration(milliseconds:2000), (){
+          // time = Timer(Duration(milliseconds:2000), (){
             Navigator.pushNamed(context, '/setpassword');
-          });
+          // });
         }else{
           toast(res.data['Message']);
         }
@@ -152,6 +160,7 @@ class _RegisteredPageState extends State<RegisteredPage> {
                   Stack(
                     children: <Widget>[
                       TextField(
+                        focusNode: _commentFocus,
                         keyboardType: TextInputType.phone,
                         style: TextStyle(fontSize: ScreenAdaper.size(30)),
                         inputFormatters: [WhitelistingTextInputFormatter.digitsOnly,LengthLimitingTextInputFormatter(11)],
@@ -186,6 +195,7 @@ class _RegisteredPageState extends State<RegisteredPage> {
                   Stack(
                     children: <Widget>[
                       TextField(
+                        focusNode: _commentFocus,
                         keyboardType: TextInputType.phone,
                         style: TextStyle(fontSize: ScreenAdaper.size(30)),
                         inputFormatters: [WhitelistingTextInputFormatter.digitsOnly,LengthLimitingTextInputFormatter(6)],

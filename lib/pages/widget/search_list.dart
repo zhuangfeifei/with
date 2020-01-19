@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/screenAdaper.dart';
+import '../../services/convertNum.dart';
 
 class SearchList extends StatelessWidget {
 
@@ -135,7 +136,7 @@ class SearchList extends StatelessWidget {
                   TextSpan(
                     children: [
                       TextSpan(text: '￥', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(16))),
-                      TextSpan(text: '${item.collegePrice/100}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(27))),
+                      TextSpan(text: '${convertNum(item.collegePrice)}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(27))),
                       TextSpan(text: '购买', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(16))),
                     ]
                   )

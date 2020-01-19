@@ -7,6 +7,7 @@ import '../../config/service_method.dart';
 import '../widget/toast.dart';
 import '../../services/storage.dart';
 import '../bottom_tab/bottom.dart';
+import '../../pages/widget/dialog.dart';
 
 
 
@@ -20,7 +21,8 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
   String _phone = '';
   String _password = '';
   bool isPassword = true;
-  // String _userPhone = TextEditingController();
+
+  FocusNode _commentFocus = FocusNode();
 
   @override
   void initState() { 
@@ -32,12 +34,16 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
   // 密码登录
   Timer time;
   void logins(){
+    _commentFocus.unfocus();    // 失去焦点
     RegExp reg = RegExp(r"^1\d{10}$");
     if(reg.hasMatch(_phone)){
+      ProgressDialog.showProgress(context);
       apiMethod('login', 'post', {'Account': _phone, 'Pwd': _password}).then((res){
+        ProgressDialog.dismiss(context);
         if(res.data['IsSuccess']){
+          toast('登录成功！');
           Storage.setString('userinfo',  json.encode(res.data['Data']));
-          time = Timer(Duration(milliseconds:2000), (){
+          time = Timer(Duration(milliseconds:1000), (){
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BottomPage()), (route) => route == null);
           });
         }else{
@@ -104,6 +110,7 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
                   Stack(
                     children: <Widget>[
                       TextField(
+                        focusNode: _commentFocus,
                         keyboardType: TextInputType.phone,
                         style: TextStyle(fontSize: ScreenAdaper.size(30)),
                         inputFormatters: [WhitelistingTextInputFormatter.digitsOnly,LengthLimitingTextInputFormatter(11)],
@@ -135,6 +142,7 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
                   Stack(
                     children: <Widget>[
                       TextField(
+                        focusNode: _commentFocus,
                         obscureText: isPassword,
                         style: TextStyle(fontSize: ScreenAdaper.size(30)),
                         decoration: InputDecoration(

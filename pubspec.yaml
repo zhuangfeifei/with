@@ -37,6 +37,14 @@ dependencies:
   video_player: ^0.10.4
   chewie: ^0.9.8+1
   flutter_html_widget: ^0.0.2
+  flutter_ijkplayer: ^0.3.5+1
+  fluwx: 1.0.4
+  # 开启权限
+  permission_handler: ^4.1.0
+  # 保存图片
+  image_gallery_saver: ^1.2.2
+  # 左滑菜单插件
+  left_scroll_actions: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -117,14 +125,51 @@ flutter:
    - images/home_image53.png
    - images/home_image54.png
    - images/home_image55.png
+   - images/home_image56.png
+   - images/home_image57.png
    - images/home_image58.png
    - images/home_image59.png
    - images/home_image60.png
    - images/home_image62.png
+   - images/home_image64.png
+   - images/home_image65.png
+   - images/home_image66.png
+   - images/home_image67.png
+   - images/home_image68.png
+   - images/home_image69.png
+   - images/home_image70.png
+   - images/home_image71.png
+   - images/home_image72.png
+   - images/home_image73.png
+   - images/home_image74.png
+   - images/home_image75.png
+   - images/home_image76.png
+   - images/home_image77.png
+   - images/home_image78.png
+   - images/home_image79.png
+   - images/home_image80.png
+   - images/home_image81.png
+   - images/home_image82.png
+   - images/home_image83.png
+   - images/home_image84.png
+   - images/home_image85.png
+   - images/home_image86.png
+   - images/home_image87.png
+   - images/home_image88.png
+   - images/home_image89.png
+   - images/home_image90.png
+   - images/home_image91.png
+   - images/home_image92.png
+   - images/home_image93.png
+   - images/home_image94.png
+   - images/home_image95.png
+   - images/home_image96.png
+   - images/home_image97.png
+   - images/home_image98.png
    - images/Lack_image01.png
-   - images/kuajinggonglve_image27.png
    - images/close_image30.png
    - images/close_image31.png
+   - images/kuajinggonglve_image27.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

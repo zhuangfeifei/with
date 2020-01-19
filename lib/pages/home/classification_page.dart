@@ -8,6 +8,7 @@ import '../../model/classificationList_model.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_easyrefresh/ball_pulse_header.dart';
 import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
+import '../../pages/widget/dialog.dart';
 
 class ClassificationPage extends StatefulWidget {
   var arguments;
@@ -23,7 +24,7 @@ class _ClassificationPageState extends State<ClassificationPage> {
   int _tabIndex = 0;
 
   int pageIndex = 1;
-  List<Data> _classificationList=[];
+  List<Data> _classificationList;
 
   var _categoryIdAPP;
 
@@ -31,13 +32,16 @@ class _ClassificationPageState extends State<ClassificationPage> {
   void initState() {
     super.initState();
     print(widget.arguments['index']);
-    _categoryIdAPP = _tab[widget.arguments['index']]['id'];
-    _tabIndex = widget.arguments['index'];
-    getList();
+    var index = widget.arguments['index']!=null ? widget.arguments['index'] : 0;
+    _categoryIdAPP = _tab[index]['id'];
+    _tabIndex = index;
+    getList(false);
   }
 
-  void getList(){
-    apiMethod('classification', 'post', {'CategoryIdAPP': _categoryIdAPP, 'PageIndex': pageIndex, 'PageSize': 5}).then((res){
+  void getList(isShowDialog){
+    if(isShowDialog && pageIndex==1) ProgressDialog.showProgress(context);
+    apiMethod('classification', 'post', {'CategoryIdAPP': _categoryIdAPP, 'PageIndex': pageIndex, 'PageSize': 10}).then((res){
+      if(isShowDialog) ProgressDialog.dismiss(context);
       if(res.data['IsSuccess']){
         var list = ClassificationListModel.fromJson(res.data);
         setState(() {
@@ -56,14 +60,14 @@ class _ClassificationPageState extends State<ClassificationPage> {
         children: <Widget>[
           Padding(
             padding: EdgeInsets.only(top: ScreenAdaper.height(226)),
-            child: _classificationList.length > 0 ? EasyRefresh.custom(
+            child: _classificationList==null ? Loading() : _classificationList.length > 0 ? EasyRefresh.custom(
               header: BallPulseHeader(),
               footer: BallPulseFooter(),
               onRefresh: () async {
                 await Future.delayed(Duration(seconds: 2), () {
                   setState(() {
                     pageIndex = 1;
-                    getList();
+                    getList(true);
                   });
                 });
               },
@@ -71,7 +75,7 @@ class _ClassificationPageState extends State<ClassificationPage> {
                 await Future.delayed(Duration(seconds: 2), () {
                   setState(() {
                     pageIndex += 1;
-                    getList();
+                    getList(true);
                   });
                 });
               },
@@ -89,7 +93,14 @@ class _ClassificationPageState extends State<ClassificationPage> {
             ) : Container(
               color: Color(0xffFFFFFF),
               child: Center(
-                child: Image.asset('images/Lack_image01.png', width: ScreenAdaper.width(280), height: ScreenAdaper.height(220),),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Image.asset('images/Lack_image01.png', width: ScreenAdaper.width(280), height: ScreenAdaper.height(220),),
+                    SizedBox(height: ScreenAdaper.height(35),),
+                    Text('暂时没有相关信息', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(28), fontWeight: FontWeight.normal, fontFamily: 'Adobe Heiti Std'),)
+                  ],
+                ),
               )
             ),
           ),
@@ -128,7 +139,8 @@ class _ClassificationPageState extends State<ClassificationPage> {
                             },
                             child: Container(
                               padding: EdgeInsets.only(left: ScreenAdaper.width(30)),
-                              child: Image.asset('images/home_image29.png', width: ScreenAdaper.width(16), height: ScreenAdaper.height(30)),
+                              width: ScreenAdaper.width(80), height: ScreenAdaper.height(30), alignment: Alignment.bottomLeft,
+                              child: Image.asset('images/home_image29.png', width: ScreenAdaper.width(16)),
                             ),
                           ),
                         ),
@@ -166,7 +178,7 @@ class _ClassificationPageState extends State<ClassificationPage> {
                   _categoryIdAPP = item['id'];
                   pageIndex = 1;
                 });
-                getList();
+                getList(true);
               });
             },
             child: Container(

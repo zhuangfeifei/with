@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:provider/provider.dart';
 import 'package:with_me/pages/widget/classification_list.dart';
 import '../../services/screenAdaper.dart';
-import '../widget/course_list.dart';
+import '../widget/live_list copy.dart';
 import '../../config/service_method.dart';
 import '../../model/home_model.dart';
 import '../widget/loading.dart';
@@ -11,6 +12,8 @@ import '../widget/strategy_list.dart';
 import '../widget/toast.dart';
 import '../../pages/widget/dialog.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../../model/liveList_model.dart';
+import '../../provider/liveListProvider.dart';
 
 class HomePage extends StatefulWidget {
   Map arguments;
@@ -20,7 +23,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   HomeModel _homeList;
 
   TextStyle _text = TextStyle(color: Color(0xff000000), fontSize: ScreenAdaper.size(24));
@@ -36,48 +39,208 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // getHome();
+    getHome();
+    livestreaming();
+    // showLoadingDialog();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    getHome();
+    // getHome();
   }
 
   getHome(){
     apiMethod('home', 'get','').then((res){
       // print(res);
-      var list = HomeModel.fromJson(res.data);
-      setState(() {
-        _homeList = list;
-      });
+      if(res.data['Code'] == '5002'){
+        Navigator.pushNamed(context, '/login');
+      }
+      if(res.data['IsSuccess']){
+        var list = HomeModel.fromJson(res.data);
+        setState(() {
+          _homeList = list;
+        });
+      }else{
+        toast(res.data['Message']);
+      }
+    });
+  }    
+
+
+  LiveListModel liveList;
+  livestreaming(){
+    apiMethod('livestreaming', 'post','?pageIndex=1').then((res){
+      // print(res);
+      if(res.data['Code'] == '5002'){
+        Navigator.pushNamed(context, '/login');
+      }
+      if(res.data['IsSuccess']){
+        var list = LiveListModel.fromJson(res.data);
+        setState(() {
+          liveList = list;
+        });
+      }else{
+        toast(res.data['Message']);
+      }
+    });
+  }
+
+
+  Future<void> _onRefresh() async{
+    print('下拉刷新');
+    await Future.delayed(Duration(milliseconds: 1000),(){
+      getHome();
+    }); 
+  }  
+
+              
+
+
+  // 新人专享
+  showLoadingDialog() {
+    Future.delayed(Duration.zero, () {
+      return showDialog<Null>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+            return GestureDetector(							// 手势处理事件
+              onTap: (){
+                // Navigator.of(context).pop();				//退出弹出框
+              },
+              child: Container(								//弹出框的具体事件
+                child: Material(
+                  color: Color.fromRGBO(0, 0, 0, 0.5),
+                  child: Center(
+                    child: Container( 
+                      width: ScreenAdaper.width(535), height: ScreenAdaper.height(800),
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            width: double.infinity, height: ScreenAdaper.height(645),
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('images/home_image90.png'), fit: BoxFit.fill 
+                              )
+                            ),
+                            child: Column(
+                              children: <Widget>[
+                                SizedBox(height: ScreenAdaper.height(290),),
+                                Stack(
+                                  children: <Widget>[
+                                    Container(
+                                      width: ScreenAdaper.width(460), height: ScreenAdaper.height(210), 
+                                      padding: EdgeInsets.only(top: ScreenAdaper.height(40)),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(6)
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Column(
+                                            children: <Widget>[
+                                              Image.asset('images/home_image91.png', width: ScreenAdaper.width(60),),
+                                              SizedBox(height: ScreenAdaper.height(13),),
+                                              Text('10牛币', style: TextStyle(
+                                                color: Color(0xff3B3B3B), fontSize: ScreenAdaper.size(22), fontWeight: FontWeight.bold
+                                              ),),
+                                            ],
+                                          ),
+                                          SizedBox(width: ScreenAdaper.width(40),),
+                                          Column(
+                                            children: <Widget>[
+                                              SizedBox(height: ScreenAdaper.height(3),),
+                                              Image.asset('images/home_image92.png', width: ScreenAdaper.width(60),),
+                                              SizedBox(height: ScreenAdaper.height(16),),
+                                              Text('《如何用P4P打造爆款》', style: TextStyle(
+                                                color: Color(0xff3B3B3B), fontSize: ScreenAdaper.size(22), fontWeight: FontWeight.bold
+                                              ),),
+                                              Text('上下2节', style: TextStyle(
+                                                color: Color(0xff3B3B3B), fontSize: ScreenAdaper.size(22), fontWeight: FontWeight.bold
+                                              ),),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: ScreenAdaper.height(55), left: ScreenAdaper.width(175),
+                                      child: Text('&', style: TextStyle(
+                                        color: Color(0xffFDA528), fontSize: ScreenAdaper.size(22), fontWeight: FontWeight.bold
+                                      )),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: ScreenAdaper.height(20),),
+                                RaisedButton(
+                                  onPressed: (){
+                                    
+                                  },
+                                  child: Text('确认领取', style: TextStyle(fontSize: ScreenAdaper.size(25), color: Color(0xffFFFFFF)),),
+                                  color: Color(0xffFED34E), padding: EdgeInsets.only(left: ScreenAdaper.width(120), right: ScreenAdaper.width(120)),
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                      color: Colors.white,
+                                      width: 0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(30)
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: ScreenAdaper.height(27),),
+                          InkWell(
+                            onTap: (){
+                              Navigator.of(context).pop();				//退出弹出框
+                            },
+                            child: Image.asset('images/close_image30.png', width: ScreenAdaper.width(54), height: ScreenAdaper.width(54),),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            );
+            
+        },
+      );        
     });
   }
 
   @override
+  bool get wantKeepAlive => true;
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
-      body: _homeList != null ? ListView(
-        padding: EdgeInsets.all(0),
-        children: <Widget>[
-          // 头部
-          _Header(bannerLists: _homeList.data.bannerList),
-          // 课程分类
-          _Classification(text: _text),
-          Container(height: ScreenAdaper.height(20), color: Color(0xffF8F8F8),),
-          // 课程上线
-          _Online(),
-          Divider(height: 1, color: Color(0xffEFEFEF),),
-          // 预告
-          _Trailer(isCircles: _isCircles, onChanged: _onChange, bookCollegeLists: _homeList.data.bookCollegeList, bookLsRoomLists: _homeList.data.bookLsRoomList),
-          Container(height: ScreenAdaper.height(20), color: Color(0xffF8F8F8),),
-          // 今日热点
-          _Hot(hotCollegeLists: _homeList.data.hotCollegeList),
-          Container(height: ScreenAdaper.height(20), color: Color(0xffF8F8F8),),
-          // 跨境攻略
-          _Strategy(kJGLLists: _homeList.data.kJGLList)
-        ],
+      body: _homeList != null ? RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: ListView(
+          padding: EdgeInsets.only(top: 0),
+          children: <Widget>[
+            // 头部
+            _Header(bannerLists: _homeList.data.bannerList),
+            // 课程分类
+            _Classification(text: _text),
+            Container(height: ScreenAdaper.height(20), color: Color(0xffF8F8F8),),
+            // 课程上线
+            _homeList.data.latestCollegeList.length >0 ? _Online(latestCollegeLists:  _homeList.data.latestCollegeList) : Container(),
+            Divider(height: ScreenAdaper.height(_homeList.data.latestCollegeList.length >0 ? 20 : 0), color: Color(0xffF8F8F8),),
+            // 直播中
+            liveList !=null && liveList.data.length > 0 ? _Liveing(liveLists: liveList) : Container(),
+            Divider(height: ScreenAdaper.height(liveList !=null && liveList.data.length > 0 ? 20 : 0), color: Color(0xffF8F8F8),),
+            // 预告
+            _Trailer(isCircles: _isCircles, onChanged: _onChange, bookCollegeLists: _homeList.data.bookCollegeList, bookLsRoomLists: _homeList.data.bookLsRoomList),
+            Container(height: ScreenAdaper.height(20), color: Color(0xffF8F8F8),),
+            // 今日热点
+            _Hot(hotCollegeLists: _homeList.data.hotCollegeList),
+            Container(height: ScreenAdaper.height(20), color: Color(0xffF8F8F8),),
+            // 跨境攻略
+            _Strategy(kJGLLists: _homeList.data.kJGLList)
+          ],
+        ),
       ) : Loading()
     );
   }
@@ -92,7 +255,8 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: ScreenAdaper.width(750), height: ScreenAdaper.height(387),
+      width: ScreenAdaper.width(750), height: ScreenAdaper.height(390 + ScreenAdaper.getStatusBarHeight()), color: Colors.black,
+      padding: EdgeInsets.only(top: ScreenAdaper.getStatusBarHeight()),
       child: Stack(
         children: <Widget>[
           // 轮播图
@@ -113,7 +277,7 @@ class _Header extends StatelessWidget {
           ),
           // 搜索栏
           Positioned(
-            top: ScreenAdaper.height(54), left: 0,
+            top: ScreenAdaper.height(54 - ScreenAdaper.getStatusBarHeight()), left: 0,
             child: Container(
               width: ScreenAdaper.width(750),
               padding: EdgeInsetsDirectional.fromSTEB(ScreenAdaper.width(30), 0, ScreenAdaper.width(30), 0),
@@ -151,12 +315,17 @@ class _Header extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Image.asset('images/home_image07.png', width: ScreenAdaper.width(36), height: ScreenAdaper.height(32),),
-                      Text('咨询', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(18)))
-                    ],
+                  InkWell(
+                    onTap: (){
+                      Navigator.pushNamed(context, '/consulting');
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset('images/home_image07.png', width: ScreenAdaper.width(36), height: ScreenAdaper.height(32),),
+                        Text('咨询', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(18)))
+                      ],
+                    ),
                   )
                 ],
               ),
@@ -240,6 +409,9 @@ class _Classification extends StatelessWidget {
 
 // 课程上线
 class _Online extends StatelessWidget {
+  final List<BookCollegeList> latestCollegeLists;
+  _Online({this.latestCollegeLists});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -255,48 +427,55 @@ class _Online extends StatelessWidget {
             child: Container(
               width: double.infinity, height: ScreenAdaper.height(122),
               child: Swiper(
-                itemCount: 3,
+                itemCount: latestCollegeLists.length,
                 autoplay: true,
                 scrollDirection: Axis.vertical,
                 itemBuilder: (BuildContext context,int index){
-                  return Container(
-                    width: double.infinity, height: ScreenAdaper.height(122),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text('Allan教你如何用Google开发新客户', style: TextStyle(
-                                color: Color(0xff000000), fontSize: ScreenAdaper.size(28), fontFamily: 'Adobe Heiti Std', fontWeight: FontWeight.normal),
-                                overflow: TextOverflow.ellipsis, maxLines: 1,
-                              ),
-                              Row(
+                  return InkWell(
+                    onTap: (){
+                      Navigator.pushNamed(context, '/watchcourse', arguments: {'collegeId': latestCollegeLists[index].id});
+                    },
+                    child: Container(
+                      width: double.infinity, height: ScreenAdaper.height(122),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Expanded(
+                            child: Container(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text('2019年11月20日8:00已上线', style: TextStyle(color: Color(0xffA2A2A2), fontSize: ScreenAdaper.size(20)),),
-                                  Container(width: ScreenAdaper.width(40),),
-                                  Text('1000人已学', style: TextStyle(color: Color(0xffA2A2A2), fontSize: ScreenAdaper.size(20)),),
+                                  Text('${latestCollegeLists[index].title}', style: TextStyle(
+                                    color: Color(0xff000000), fontSize: ScreenAdaper.size(28), fontFamily: 'Adobe Heiti Std', fontWeight: FontWeight.normal),
+                                    overflow: TextOverflow.ellipsis, maxLines: 1,
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Text('${latestCollegeLists[index].onlineTime}已上线', style: TextStyle(color: Color(0xffA2A2A2), fontSize: ScreenAdaper.size(20)),),
+                                      Container(width: ScreenAdaper.width(40),),
+                                      Text('${latestCollegeLists[index].viewCount}人已学', style: TextStyle(color: Color(0xffA2A2A2), fontSize: ScreenAdaper.size(20)),),
+                                    ],
+                                  )
                                 ],
-                              )
-                            ],
-                          ),
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              width: ScreenAdaper.width(12), height: ScreenAdaper.width(12), margin: EdgeInsets.only(right: ScreenAdaper.width(16)),
-                              child: CircleAvatar(
-                                backgroundColor: Color(0xffFB4915),
-                                radius: 90.0,
                               ),
                             ),
-                            Image.asset('images/home_image06.png', width: ScreenAdaper.width(11), height: ScreenAdaper.height(16),)
-                          ],
-                        )
-                      ],
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                width: ScreenAdaper.width(12), height: ScreenAdaper.width(12), margin: EdgeInsets.only(right: ScreenAdaper.width(16)),
+                                child: CircleAvatar(
+                                  backgroundColor: Color(0xffFB4915),
+                                  radius: 90.0,
+                                ),
+                              ),
+                              Image.asset('images/home_image06.png', width: ScreenAdaper.width(11), height: ScreenAdaper.height(16),)
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -311,6 +490,49 @@ class _Online extends StatelessWidget {
 }
 
 
+// 直播中
+class _Liveing extends StatelessWidget {
+  final LiveListModel liveLists;
+  _Liveing({this.liveLists});
+
+  @override
+  Widget build(BuildContext context) {
+    var provider = Provider.of<LiveListProvider>(context);
+    return Container(
+      width: double.infinity, height: ScreenAdaper.height(305),
+      color: Color(0xffFFFFFF), padding: EdgeInsets.fromLTRB(ScreenAdaper.width(30), ScreenAdaper.height(30), ScreenAdaper.width(30), 0),
+      child: Column(
+        children: <Widget>[
+          Container(
+            width: double.infinity, height: ScreenAdaper.height(50),
+            child: Stack(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text('直播中', style: TextStyle(fontSize: ScreenAdaper.size(34), color: Color(0xff000000), fontWeight: FontWeight.bold),),
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: InkWell(
+                    onTap: (){
+                      provider.initliveListProvider(liveLists);
+                      Navigator.pushNamed(context, '/livein');
+                    },
+                    child: Text('查看更多>', style: TextStyle(fontSize: ScreenAdaper.size(22), color: Color(0xffA2A2A2), fontWeight: FontWeight.bold),),
+                  ),
+                )
+              ],
+            ),
+          ),
+          SizedBox(height: ScreenAdaper.height(30),),
+          LiveList(list: liveLists.data[0])
+        ],
+      ),
+    );
+  }
+}
+
+
 // 预告
 class _Trailer extends StatelessWidget {
   final bool isCircles;
@@ -318,6 +540,20 @@ class _Trailer extends StatelessWidget {
   final List<BookCollegeList> bookCollegeLists;
   final List<BookLsRoomList> bookLsRoomLists;
   _Trailer({this.isCircles : false, @required this.onChanged, this.bookCollegeLists, this.bookLsRoomLists});
+
+
+  void book(context, id){
+    ProgressDialog.showProgress(context);
+    apiMethod('book', 'post', {'TargetType': 9, 'TargetId': id, 'Oper': 1}).then((res){
+      ProgressDialog.dismiss(context);
+      if(res.data['IsSuccess']){
+        toast('预约成功！');
+      }else{
+        toast(res.data['Message']);
+      }
+      Navigator.of(context).pop();				//退出弹出框
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -406,73 +642,87 @@ class _Trailer extends StatelessWidget {
       scrollDirection: Axis.horizontal, padding: EdgeInsetsDirectional.fromSTEB(0, ScreenAdaper.height(5), 0, ScreenAdaper.height(5)),
       itemCount: !_isCircles ? bookLsRoomLists.length :bookCollegeLists.length,
       itemBuilder: (context, index){
-        return Container(
-          width: ScreenAdaper.width(391), height: ScreenAdaper.height(347), 
-          margin: EdgeInsetsDirectional.fromSTEB(ScreenAdaper.width(index==0?30:0), 0, ScreenAdaper.width(index==3?30:22), 0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6), color: Color(0xffFFFFFF),
-            boxShadow: [
-              BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.08), offset: Offset(0, 0), blurRadius: 3),
-            ],
-          ),
-          child: Column(
-            children: <Widget>[
-              Container(
-                width: ScreenAdaper.width(391), height: ScreenAdaper.height(204), 
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(6), topRight: Radius.circular(6),
-                  ),
-                  child: Image.network('${!_isCircles ? bookLsRoomLists[index].img : bookCollegeLists[index].smallImageUrl}', fit: BoxFit.fill,),
-                ),
-              ),
-              Container(
-                width: double.infinity, margin: EdgeInsets.only(top: ScreenAdaper.height(10)),
-                padding: EdgeInsetsDirectional.fromSTEB(ScreenAdaper.width(21), 0, ScreenAdaper.width(21), 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('${!_isCircles ? bookLsRoomLists[index].title :bookCollegeLists[index].title}', style: TextStyle(fontSize: ScreenAdaper.size(24), color: Color(0xff000000), 
-                      fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis,
+        return InkWell(
+          onTap: (){
+            if(!_isCircles){
+              Navigator.pushNamed(context, '/livecourse', arguments: {'collegeId': bookLsRoomLists[index].id});
+            }else{
+              Navigator.pushNamed(context, '/watchcourse', arguments: {'collegeId': bookCollegeLists[index].id});
+            }
+          },
+          child: Container(
+            width: ScreenAdaper.width(391), height: ScreenAdaper.height(347), 
+            margin: EdgeInsetsDirectional.fromSTEB(ScreenAdaper.width(index==0?30:0), 0, ScreenAdaper.width(index==3?30:22), 0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(6), color: Color(0xffFFFFFF),
+              boxShadow: [
+                BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.08), offset: Offset(0, 0), blurRadius: 3),
+              ],
+            ),
+            child: Column(
+              children: <Widget>[
+                Container(
+                  width: ScreenAdaper.width(391), height: ScreenAdaper.height(204), 
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(6), topRight: Radius.circular(6),
                     ),
-                    Text('— ${!_isCircles ? bookLsRoomLists[index].teacherName :bookCollegeLists[index].teacherName}', style: TextStyle(fontSize: ScreenAdaper.size(20), color: Color(0xffA2A2A2)),),
-                    SizedBox(height: ScreenAdaper.height(10),),
-                    !isCircles ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Text('${bookLsRoomLists[index].bookCount}', style: TextStyle(fontSize: ScreenAdaper.size(20), color: Color(0xffFF8636)),),
-                            Text('人已预约', style: TextStyle(fontSize: ScreenAdaper.size(20), color: Color(0xffA2A2A2)),),
-                          ],
-                        ),
-                        InkWell(
-                          onTap: (){
-                            if(!bookLsRoomLists[index].isBook){
-                              myDialog(context, index);
-                            }
-                          },
-                          child: Container(
-                            width: ScreenAdaper.width(120), height: ScreenAdaper.width(40),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30), color: Color(!bookLsRoomLists[index].isBook?0xffFF8636:0xffDDDDDD),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Image.asset('images/home_image22.png', width: ScreenAdaper.width(26), height: ScreenAdaper.width(26),),
-                                SizedBox(width: ScreenAdaper.width(12),),
-                                Text(!bookLsRoomLists[index].isBook?'预约':'已预约', style: TextStyle(fontSize: ScreenAdaper.size(22), color: Color(0xffFFFFFF), fontWeight: FontWeight.bold),),                              
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ) : Text(' ')
-                  ],
+                    child: Image.network('${!_isCircles ? bookLsRoomLists[index].img : bookCollegeLists[index].smallImageUrl}', fit: BoxFit.fill,),
+                  ),
                 ),
-              )
-            ],
+                Container(
+                  width: double.infinity, margin: EdgeInsets.only(top: ScreenAdaper.height(10)),
+                  padding: EdgeInsetsDirectional.fromSTEB(ScreenAdaper.width(21), 0, ScreenAdaper.width(21), 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text('${!_isCircles ? bookLsRoomLists[index].title :bookCollegeLists[index].title}', style: TextStyle(fontSize: ScreenAdaper.size(24), color: Color(0xff000000), 
+                        fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis,
+                      ),
+                      Text('— ${!_isCircles ? bookLsRoomLists[index].teacherName :bookCollegeLists[index].teacherName}', style: TextStyle(fontSize: ScreenAdaper.size(20), color: Color(0xffA2A2A2)),),
+                      SizedBox(height: ScreenAdaper.height(10),),
+                      !isCircles ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Text('${bookLsRoomLists[index].bookCount}', style: TextStyle(fontSize: ScreenAdaper.size(20), color: Color(0xffFF8636)),),
+                              Text('人已预约', style: TextStyle(fontSize: ScreenAdaper.size(20), color: Color(0xffA2A2A2)),),
+                            ],
+                          ),
+                          InkWell(
+                            onTap: (){
+                              if(!bookLsRoomLists[index].isBook){
+                                myDialog(context, index);
+                              }
+                            },
+                            child: Container(
+                              width: ScreenAdaper.width(120), height: ScreenAdaper.width(40),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30), color: Color(!bookLsRoomLists[index].isBook?0xffFF8636:0xffDDDDDD),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Image.asset('images/home_image22.png', width: ScreenAdaper.width(26), height: ScreenAdaper.width(26),),
+                                  SizedBox(width: ScreenAdaper.width(12),),
+                                  Text(!bookLsRoomLists[index].isBook?'预约':'已预约', style: TextStyle(fontSize: ScreenAdaper.size(22), color: Color(0xffFFFFFF), fontWeight: FontWeight.bold),),                              
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ) : Row(
+                        children: <Widget>[
+                          Text('上线时间：', style: TextStyle(fontSize: ScreenAdaper.size(20), color: Color(0xffA2A2A2)),),
+                          Text('${bookCollegeLists[index].onlineTime}', style: TextStyle(fontSize: ScreenAdaper.size(20), color: Color(0xffFF8636)),),
+                        ],
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         );
       },
@@ -494,11 +744,11 @@ class _Trailer extends StatelessWidget {
                 color: Color.fromRGBO(0, 0, 0, 0.5),
                 child: Center(
                   child: Container( 
-                    width: ScreenAdaper.width(509), height: ScreenAdaper.height(700), 
+                    width: ScreenAdaper.width(509),
                     child: Column(
                       children: <Widget>[
                         Container(
-                          width: double.infinity, height: ScreenAdaper.height(576), 
+                          width: double.infinity, padding: EdgeInsets.only(bottom: ScreenAdaper.height(40)),
                           decoration: BoxDecoration(
                             color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(10)
                           ),
@@ -527,14 +777,7 @@ class _Trailer extends StatelessWidget {
                               SizedBox(height: ScreenAdaper.height(50),),
                               RaisedButton(
                                 onPressed: (){
-                                  apiMethod('book', 'post', {'TargetType': 9, 'TargetId': bookLsRoomLists[index].id, 'Oper': 1}).then((res){
-                                    if(res.data['IsSuccess']){
-                                      toast('预约成功！');
-                                    }else{
-                                      toast(res.data['Message']);
-                                    }
-                                    Navigator.of(context).pop();				//退出弹出框
-                                  });
+                                  book(context, bookLsRoomLists[index].id);
                                 },
                                 child: Text('确定预约', style: TextStyle(fontSize: ScreenAdaper.size(25), color: Color(0xffFFFFFF)),),
                                 color: Color(0xffFED34E), padding: EdgeInsets.only(left: ScreenAdaper.width(120), right: ScreenAdaper.width(120)),

@@ -6,6 +6,7 @@ import '../../services/screenAdaper.dart';
 import '../../config/service_method.dart';
 import '../widget/toast.dart';
 import '../../services/storage.dart';
+import '../../pages/widget/dialog.dart';
 
 
 
@@ -19,6 +20,8 @@ class _SetnewpasswordPageState extends State<SetnewpasswordPage> {
   String _password = '';
   String _passwords = '';
 
+  FocusNode _commentFocus = FocusNode();
+
   @override
   void initState() { 
     super.initState();
@@ -31,12 +34,15 @@ class _SetnewpasswordPageState extends State<SetnewpasswordPage> {
 
   Timer time;
   void setpasswords() async {
+    _commentFocus.unfocus();    // 失去焦点
     RegExp reg = RegExp(r"^(?:(?=.*[a-zA-Z])(?=.*[0-9])).{6,30}$");
     if(reg.hasMatch(_password)){
       if(_password == _passwords){
+        ProgressDialog.showProgress(context);
         var userinfo = await Storage.getString('userinfo');
         var _phone = json.decode(userinfo)['Mobile'];
         apiMethod('setpwd', 'post', {'Account': _phone, 'Pwd': _password}).then((res){
+          ProgressDialog.dismiss(context);
           if(res.data['IsSuccess']){
             toast('设置成功！');
             time = Timer(Duration(milliseconds:2000), (){
@@ -94,6 +100,7 @@ class _SetnewpasswordPageState extends State<SetnewpasswordPage> {
                   Text('新密码设置成功后请妥善保存哦！', style: TextStyle(fontSize: ScreenAdaper.size(24), color: Color(0xff7F7F7F)),),
                   SizedBox(height: ScreenAdaper.height(70),),
                   TextField(
+                    focusNode: _commentFocus,
                     obscureText: true,
                     maxLength: 16, 
                     decoration: InputDecoration(
@@ -107,6 +114,7 @@ class _SetnewpasswordPageState extends State<SetnewpasswordPage> {
                     },
                   ),
                   TextField(
+                    focusNode: _commentFocus,
                     obscureText: true,
                     maxLength: 16,
                     decoration: InputDecoration(

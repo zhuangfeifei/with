@@ -6,6 +6,7 @@ import '../../services/screenAdaper.dart';
 import '../../config/service_method.dart';
 import '../widget/toast.dart';
 import '../../services/storage.dart';
+import '../../pages/widget/dialog.dart';
 
 
 
@@ -20,6 +21,8 @@ class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
   String _code = '';
   int seconds = 60;
   bool isCode = true;
+
+  FocusNode _commentFocus = FocusNode();
 
   @override
   void initState() { 
@@ -51,7 +54,9 @@ class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
   void sendCode(){
     RegExp reg = RegExp(r"^1\d{10}$");
     if(reg.hasMatch(_phone)){
+      ProgressDialog.showProgress(context);
       apiMethod('captcha', 'post', {'Mobile': _phone, 'Type': 2}).then((res){
+        ProgressDialog.dismiss(context);
         if(res.data['IsSuccess']){
           _showTimer();
           toast('发送成功！');
@@ -68,9 +73,12 @@ class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
   // 验证
   Timer time;
   void logins(){
+    _commentFocus.unfocus();    // 失去焦点
     RegExp reg = RegExp(r"\d{6}$");
     if(reg.hasMatch(_code)){
+      ProgressDialog.showProgress(context);
       apiMethod('quicklogin', 'post', {'Mobile': _phone, 'Captcha': _code}).then((res){
+        ProgressDialog.dismiss(context);
         if(res.data['IsSuccess']){
           Storage.setString('userinfo',  json.encode(res.data['Data']));
           Navigator.pushNamed(context, '/setnewpassword');
@@ -128,6 +136,7 @@ class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
                   Stack(
                     children: <Widget>[
                       TextField(
+                        focusNode: _commentFocus,
                         keyboardType: TextInputType.phone,
                         style: TextStyle(fontSize: ScreenAdaper.size(30)),
                         inputFormatters: [WhitelistingTextInputFormatter.digitsOnly,LengthLimitingTextInputFormatter(11)],
@@ -159,6 +168,7 @@ class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
                   Stack(
                     children: <Widget>[
                       TextField(
+                        focusNode: _commentFocus,
                         keyboardType: TextInputType.phone,
                         style: TextStyle(fontSize: ScreenAdaper.size(30)),
                         inputFormatters: [WhitelistingTextInputFormatter.digitsOnly,LengthLimitingTextInputFormatter(6)],

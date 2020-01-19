@@ -11,14 +11,17 @@ Future apiMethod(url, type, formData) async{
   try{
     // BuildContext context;
     // ProgressDialog.showProgress(context);
+    print('开始请求数据！');
     Response response;
     Dio dio = new Dio();
     var userinfo = await Storage.getString('userinfo');
     if(userinfo !=null){
       var token = json.decode(userinfo)['Token'];
       dio.options.headers['Token'] = token;
+      print(token);
     }
-    response = await (type == 'post' ? dio.post(servicePath[url], data: formData) : dio.get(servicePath[url]));
+    // dio.options.headers['Content-Type']
+    response = await (type == 'post' ? dio.post(servicePath[url], data: formData) : dio.get(servicePath[url]+formData));
     if(response.statusCode == 200){
       // ProgressDialog.dismiss(context);
       return response;

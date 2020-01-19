@@ -154,6 +154,9 @@ class _SearchPageState extends State<SearchPage> {
                       InkWell(
                         onTap: (){
                           setState(() {
+                            if(!_isRetrieve){
+                              Navigator.pop(context);
+                            }
                             _isRetrieve = false;
                           });
                         },
@@ -183,7 +186,7 @@ class _SearchPageState extends State<SearchPage> {
       List<Widget> list = _searchbytitleandteacherList.map((item){
         return InkWell(
           onTap: (){
-
+            Navigator.pushNamed(context, '/watchcourse', arguments: {'collegeId': item.id});
           },
           child: SearchList(item:item, value: _inputValue,),
         );
@@ -204,7 +207,7 @@ class _SearchPageState extends State<SearchPage> {
       List<Widget> listWidget = _list.map((item){
         return InkWell(
           onTap: (){
-            print(item.title);
+            Navigator.pushNamed(context, '/watchcourse', arguments: {'collegeId': item.collgeId});
           },
           child: Container(
             padding: EdgeInsets.only(left: ScreenAdaper.width(38)),
@@ -262,7 +265,10 @@ class _SearchPageState extends State<SearchPage> {
         spacing: 1,
       );
     }else{
-      return Loading();
+      return Container(
+        padding: EdgeInsets.only(top: ScreenAdaper.height(100)),
+        child: Loading(),
+      );
     }
   }
 

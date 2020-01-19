@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+// 分享动画弹窗
 Future<T> showCustomDialog<T>({
   @required BuildContext context,
   bool barrierDismissible = true,

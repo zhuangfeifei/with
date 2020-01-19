@@ -13,15 +13,20 @@ class BottomPage extends StatefulWidget {
 
 class _BottomPageState extends State<BottomPage> {
 
+  PageController _pageController;
+
   final List<Widget> tabBodies = List();
   int currentIndex= 0;
 
   @override
   void initState() {
-   tabBodies..add(HomePage())..add(AlreadyboughtPage())..add(CoursecenterPage())..add(MyPage());
+    this._pageController =PageController(initialPage: this.currentIndex, keepPage: true);
+
+    tabBodies..add(HomePage())..add(AlreadyboughtPage())..add(CoursecenterPage())..add(MyPage());
 
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,10 +63,15 @@ class _BottomPageState extends State<BottomPage> {
         onTap: (index){
           setState(() {
            currentIndex = index;
+           _pageController.jumpToPage(index);
           });
         },
       ),
-      body: tabBodies[currentIndex],
+      body: PageView(
+        children: tabBodies,
+        controller: _pageController,
+        physics: NeverScrollableScrollPhysics(),
+      ),
     );
   }
 }

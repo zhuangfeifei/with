@@ -17,11 +17,19 @@ import '../pages/home/classification_page.dart';
 import '../pages/home/watchcourse_page.dart';
 import '../pages/home/pay_page.dart';
 import '../pages/home/recharge_page.dart';
+import '../pages/home/livecourse_page.dart';
+import '../pages/home/consulting_page.dart';
+import '../pages/home/livein_page.dart';
+import '../pages/home/strategyDetail_page.dart';
 
 import '../pages/alreadybought/alreadybought_page.dart';
 
 import '../pages/my/my_page.dart';
 import '../pages/my/coupon_page.dart';
+import '../pages/my/myCoupon_page.dart';
+import '../pages/my/myCollection_page.dart';
+import '../pages/my/myCow_page.dart';
+import '../pages/my/exchangeCoupon_page.dart';
 
 final routes = {
   '/': (contxt) => StartPage(),
@@ -34,14 +42,22 @@ final routes = {
   '/home': (context, {arguments}) => HomePage(arguments: arguments),
   '/search': (contxt) => SearchPage(), // 搜索
   '/strategy': (contxt) => StrategyPage(), // 攻略
+  '/strategyDetail': (context, {arguments}) => StrategyDetailPage(arguments: arguments), // 攻略详情
   '/classification': (context, {arguments}) => ClassificationPage(arguments: arguments), // 课程分类
   '/watchcourse': (context, {arguments}) => WatchcoursePage(arguments: arguments), // 观看课程
-  '/pay': (context, {arguments}) => PayPage(arguments: arguments), // 支付
+  '/pay': (context) => PayPage(), // 支付
   '/recharge': (contxt) => RechargePage(), // 充值
-  '/bottom': (contxt) => BottomPage(), // 
+  '/consulting': (contxt) => ConsultingPage(), // 咨询
+  '/livein': (contxt) => LiveinPage(), // 直播中 
+  '/bottom': (contxt) => BottomPage(), // tab
   '/alreadybought': (contxt) => AlreadyboughtPage(), // 已购
   '/my': (contxt) => MyPage(), // 我的
+  '/livecourse': (contxt, {arguments}) => LivecoursePage(arguments: arguments), // 直播
   '/coupon': (contxt) => CouponPage(), // 优惠券
+  '/mycoupon': (contxt) => MyCouponPage(), // 优惠券
+  '/exchangeCoupon': (contxt) => ExchangeCouponPage(), // 优惠券
+  '/myCollection': (contxt) => MyCollectionPage(), // 我的收藏
+  '/myCow': (contxt, {arguments}) => MyCowPage(arguments: arguments), // 我的牛币
 };
 
 var onGenerateRoute = (RouteSettings settings) {

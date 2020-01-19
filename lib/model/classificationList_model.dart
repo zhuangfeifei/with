@@ -61,6 +61,7 @@ class ClassificationListModel {
 class Data {
   int evaluateCount;
   bool isHaveFree;
+  bool checked;
   int id;
   int categoryId;
   int categoryId2;
@@ -101,6 +102,7 @@ class Data {
   Data(
       {this.evaluateCount,
       this.isHaveFree,
+      this.checked,
       this.id,
       this.categoryId,
       this.categoryId2,
@@ -141,6 +143,7 @@ class Data {
   Data.fromJson(Map<String, dynamic> json) {
     evaluateCount = json['EvaluateCount'];
     isHaveFree = json['IsHaveFree'];
+    checked = json['checked'];
     id = json['Id'];
     categoryId = json['CategoryId'];
     categoryId2 = json['CategoryId2'];
@@ -183,6 +186,7 @@ class Data {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['EvaluateCount'] = this.evaluateCount;
     data['IsHaveFree'] = this.isHaveFree;
+    data['checked'] = this.checked;
     data['Id'] = this.id;
     data['CategoryId'] = this.categoryId;
     data['CategoryId2'] = this.categoryId2;
