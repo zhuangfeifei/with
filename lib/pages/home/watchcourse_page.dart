@@ -118,10 +118,15 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
   }
 
   
+  // 分享的海报
+  var shareImg = '';
+  // 是否是好友
+  bool isGoodFriends;
   // 截图
   GlobalKey rootWidgetKey = GlobalKey();
   Uint8List images;
   _capturePng() async {
+    ProgressDialog.showProgress(context);
     try {
       RenderRepaintBoundary boundary = rootWidgetKey.currentContext.findRenderObject();
       var image = await boundary.toImage(pixelRatio: 3.0);
@@ -133,7 +138,11 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
       });
 
       // 获取权限
-      getPermission();
+      if(isGoodFriends == null){
+        getPermission();
+      }else{
+        getShareImg();
+      }
       
       return pngBytes;
     } catch (e) {
@@ -143,9 +152,23 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
   }
   
   // 分享微信好友
-  var shareImg = '';
-  bool isGoodFriends;
+  // 上传图片给后台生成网络图片
+  void getShareImg(){
+    apiMethod('uploadfile', 'post', {'FileBytes': images}).then((res){
+      ProgressDialog.dismiss(context);
+      print(res.data);
+      if(res.data['IsSuccess']){
+        setState(() {
+          shareImg = res.data['Data'];
+          shares();
+        });
+      }else{
+        toast(res.data['Message']);
+      }  
+    });
+  }
   void shares(){
+    print('==============================${shareImg}');
     fluwx.share(fluwx.WeChatShareImageModel(
       image: shareImg,
       thumbnail: '',
@@ -168,19 +191,21 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
       }
     });
   }
+  // 是否保存过
+  bool isSavePosters = false;
   // 保存海报
   void _savePosters() async{
     final result = await ImageGallerySaver.saveImage(images); //这个是核心的保存图片的插件
     print(result);   //这个返回值 在保存成功后会返回true
+    ProgressDialog.dismiss(context);
     setState(() {
-      shareImg = result;
+      isSavePosters = true;
+      if(result != ''){
+        toast('保存成功！');
+      }else{
+        toast('保存失败！');
+      }
     });
-    if(result != ''){
-      toast('保存成功');
-      if(isGoodFriends!=null) shares();
-    }else{
-      toast('保存失败');
-    }
   }
 
 
@@ -438,7 +463,7 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
                       color: Color.fromRGBO(0, 0, 0, 0.3), borderRadius: BorderRadius.circular(26)
                     ),
                     child: Center(
-                      child: Text('${clarity[clarityIndex].substring(0,2)}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(20)),),
+                      child: Text('${this._course.data.collegeClass[_directoryIndex].videoUrlList[clarityIndex].typeName.substring(0,2)}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(20)),),
                     ),
                   ),
                 ),
@@ -500,14 +525,14 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
                     SizedBox(height: ScreenAdaper.height(25)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: this.clarity.map((item){
-                        var index = this.clarity.indexOf(item);
+                      children: this._course.data.collegeClass[_directoryIndex].videoUrlList.map((item){
+                        var index = this._course.data.collegeClass[_directoryIndex].videoUrlList.indexOf(item);
                         return InkWell(
                           onTap: ()async{
                             VideoInfo info = await controllerVideo.getVideoInfo();
                             print(info);
                             setState((){
-                              videoUrl = _course.data.collegeClass[0].videoUrlList[index].url;
+                              videoUrl = _course.data.collegeClass[_directoryIndex].videoUrlList[index].url;
                               isShowClarity = false;
                               clarityIndex = index;
                               duration = info.currentPosition; 
@@ -520,7 +545,7 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
                               color: clarityIndex==index ? Color.fromRGBO(255, 134, 54, 0.3) : Color.fromRGBO(255, 255, 255, 0.3), borderRadius: BorderRadius.circular(7)
                             ),
                             child: Center(
-                              child: Text('$item', style: TextStyle(color: Color(clarityIndex==index?0xffFF8636:0xffFFFFFF), fontSize: ScreenAdaper.size(22), fontWeight: FontWeight.bold),),
+                              child: Text('${item.typeName}', style: TextStyle(color: Color(clarityIndex==index?0xffFF8636:0xffFFFFFF), fontSize: ScreenAdaper.size(22), fontWeight: FontWeight.bold),),
                             ),
                           ),
                         );
@@ -578,7 +603,7 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
                                 width: ScreenAdaper.width(750), color: Color.fromRGBO(0, 0, 0, 0.8),
                                 child: AspectRatio(
                                   aspectRatio: 75/44,
-                                  child: _course.data.orderSatus.orderStatus == 2 ? Center(
+                                  child: _course.data.orderSatus.orderStatus == 2 || _course.data.orderSatus.orderStatus == 3 ? Center(
                                     child: InkWell(
                                       onTap: (){
                                         setState(() {
@@ -841,25 +866,25 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
         return Container(
           child: Stack(
             children: <Widget>[
-              Center(
+              Container(
+                padding: EdgeInsets.only(left: ScreenAdaper.width(85), top: ScreenAdaper.height(210)),
                 child: GestureDetector(							// 手势处理事件
                   onTap: (){
                     // Navigator.of(context).pop();				//退出弹出框
-                    print('object');
+                    // print('object');
                   },
-                  child: RepaintBoundary(
-                    key: rootWidgetKey,
-                    child: Container(
-                      width: ScreenAdaper.width(580),
+                  child: Container(
+                    width: ScreenAdaper.width(580), height: ScreenAdaper.height(649), color: Colors.red,
+                    child: RepaintBoundary(
+                      key: rootWidgetKey,
                       child: Column(
                         children: <Widget>[
-                          SizedBox(height: ScreenAdaper.height(210),),
                           Container(
-                            width: ScreenAdaper.width(580), height: ScreenAdaper.height(284),
-                            child: Image.network('${_course.data.teacherImg}', fit: BoxFit.fill,)
+                            width: ScreenAdaper.width(580), height: ScreenAdaper.height(348),
+                            child: Image.network('${_course.data.smallImageUrl}', fit: BoxFit.fill,)
                           ),
                           Container(
-                            width: ScreenAdaper.width(580), color: Color(0xffFFFFFF),
+                            width: ScreenAdaper.width(580), color: Color(0xffFFFFFF), 
                             padding: EdgeInsets.symmetric(vertical: ScreenAdaper.width(35), horizontal: ScreenAdaper.width(35)),
                             child: Column(
                               children: <Widget>[
@@ -920,7 +945,8 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
               Positioned(
                 bottom: 0, left: 0,
                 child: Container(
-                  width: ScreenAdaper.width(750), height: ScreenAdaper.height(323), color: Color(0xffFFFFFF),
+                  width: ScreenAdaper.width(750), height: ScreenAdaper.height(323), 
+                  color: Color(0xffFFFFFF),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
@@ -956,7 +982,14 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
                           children: <Widget>[
                             GestureDetector(
                               onTap: (){
-                                _capturePng();
+                                if(isSavePosters) {
+                                  toast('已经保存到相册');
+                                }else if(images == null){
+                                  _capturePng();
+                                }else{
+                                  // 如果有截图，就直接保存不需要再截图
+                                  getPermission();
+                                }
                               },
                               child: Column(
                                 children: <Widget>[
@@ -970,8 +1003,9 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
                               onTap: (){
                                 setState(() {
                                   isGoodFriends = true;
+                                  // 如果分享海报已经生成就直接分享，如果分享海报没有生成就判断截图有没有生成，如果没有就生成，如果有就上传后台生成海报
+                                  shareImg !='' ? shares() : images == null ?_capturePng() : getShareImg();
                                 });
-                                shareImg !='' ? shares() : _capturePng();
                               },
                               child: Column(
                                 children: <Widget>[
@@ -985,8 +1019,8 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
                               onTap: (){
                                 setState(() {
                                   isGoodFriends = false;
+                                  shareImg !='' ? shares() : images == null ?_capturePng() : getShareImg();
                                 });
-                                shareImg !='' ? shares() : _capturePng();
                               },
                               child: Column(
                                 children: <Widget>[

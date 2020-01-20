@@ -24,6 +24,7 @@ class _RegisteredPageState extends State<RegisteredPage> {
   // String _userPhone = TextEditingController();
 
   FocusNode _commentFocus = FocusNode();
+  FocusNode _commentFocus1 = FocusNode();
 
   @override
   void initState() { 
@@ -75,6 +76,7 @@ class _RegisteredPageState extends State<RegisteredPage> {
   // Timer time;
   void registereds(){
     _commentFocus.unfocus();    // 失去焦点
+    _commentFocus1.unfocus();    // 失去焦点
     RegExp reg = RegExp(r"\d{6}$");
     if(reg.hasMatch(_code)){
       ProgressDialog.showProgress(context);
@@ -195,7 +197,7 @@ class _RegisteredPageState extends State<RegisteredPage> {
                   Stack(
                     children: <Widget>[
                       TextField(
-                        focusNode: _commentFocus,
+                        focusNode: _commentFocus1,
                         keyboardType: TextInputType.phone,
                         style: TextStyle(fontSize: ScreenAdaper.size(30)),
                         inputFormatters: [WhitelistingTextInputFormatter.digitsOnly,LengthLimitingTextInputFormatter(6)],

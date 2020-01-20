@@ -232,7 +232,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
             liveList !=null && liveList.data.length > 0 ? _Liveing(liveLists: liveList) : Container(),
             Divider(height: ScreenAdaper.height(liveList !=null && liveList.data.length > 0 ? 20 : 0), color: Color(0xffF8F8F8),),
             // 预告
-            _Trailer(isCircles: _isCircles, onChanged: _onChange, bookCollegeLists: _homeList.data.bookCollegeList, bookLsRoomLists: _homeList.data.bookLsRoomList),
+            _Trailer(isCircles: _isCircles, onChanged: _onChange, bookCollegeLists: _homeList.data.bookCollegeList, bookLsRoomLists: _homeList.data.bookLsRoomList, homeMethods: getHome),
             Container(height: ScreenAdaper.height(20), color: Color(0xffF8F8F8),),
             // 今日热点
             _Hot(hotCollegeLists: _homeList.data.hotCollegeList),
@@ -263,7 +263,12 @@ class _Header extends StatelessWidget {
           Swiper(
             itemCount: bannerLists.length,
             itemBuilder: (BuildContext context,int index){
-              return Image.network("${bannerLists[index].imageUrl}",fit: BoxFit.fill,);
+              return InkWell(
+                onTap: (){
+                  Navigator.pushNamed(context, '/watchcourse', arguments: {'collegeId': bannerLists[index].jumpInfo});
+                },
+                child: Image.network("${bannerLists[index].imageUrl}",fit: BoxFit.fill,)
+              );
             },
             autoplay: true,
             pagination: SwiperPagination(
@@ -539,15 +544,17 @@ class _Trailer extends StatelessWidget {
   final onChanged;
   final List<BookCollegeList> bookCollegeLists;
   final List<BookLsRoomList> bookLsRoomLists;
-  _Trailer({this.isCircles : false, @required this.onChanged, this.bookCollegeLists, this.bookLsRoomLists});
+  final homeMethods;
+  _Trailer({this.isCircles : false, @required this.onChanged, this.bookCollegeLists, this.bookLsRoomLists, @required this.homeMethods});
 
-
+  // 预约
   void book(context, id){
     ProgressDialog.showProgress(context);
     apiMethod('book', 'post', {'TargetType': 9, 'TargetId': id, 'Oper': 1}).then((res){
       ProgressDialog.dismiss(context);
       if(res.data['IsSuccess']){
         toast('预约成功！');
+        homeMethods();
       }else{
         toast(res.data['Message']);
       }
@@ -744,7 +751,7 @@ class _Trailer extends StatelessWidget {
                 color: Color.fromRGBO(0, 0, 0, 0.5),
                 child: Center(
                   child: Container( 
-                    width: ScreenAdaper.width(509),
+                    width: ScreenAdaper.width(509), height: ScreenAdaper.height(600),
                     child: Column(
                       children: <Widget>[
                         Container(

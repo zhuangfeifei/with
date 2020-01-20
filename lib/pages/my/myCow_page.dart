@@ -76,6 +76,15 @@ class _MyCowPageState extends State<MyCowPage> {
     });
   }
 
+  @override
+  void deactivate() {
+    super.deactivate();
+    var bools = ModalRoute.of(context).isCurrent;
+    if (bools) {
+      getUserinfo();
+    }
+  }
+
   void getUserinfo() async {
     var data = await Storage.getString('userinfo');
     setState(() {
@@ -87,7 +96,7 @@ class _MyCowPageState extends State<MyCowPage> {
     setState(() {
       this.flag = false;
     });
-    apiMethod('myConsumption', 'post', {"PageSize":10,"PageIndex":pageIndex,"GoodsTypeList":[1,2,4,6,7],"Filter":0,"IsNeedExtendInfo":0}).then((res){
+    apiMethod('myConsumption', 'post', {"PageSize":10,"PageIndex":pageIndex,"GoodsTypeList":[1,2,3,4,6,7],"Filter":0,"IsNeedExtendInfo":0}).then((res){
       if(res.data['IsSuccess']){
         var list = MyConsumptionModel.fromJson(res.data);
         setState(() {

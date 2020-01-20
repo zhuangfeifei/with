@@ -332,18 +332,23 @@ class _PayPageState extends State<PayPage> {
                         showDialog<bool>(
                         context: context,
                         builder: (context) {
+                          var isPays = course.data.collegePrice > _balance ? false : true;
                           return AlertDialog(
-                            title: Text("提示"),
-                            content: Text("您确定要支付吗?"),
+                            title: Text("温馨提示"),
+                            content: Text("${isPays ? '您确定要支付吗?' : '余额不足请前往充值！'}"),
                             actions: <Widget>[
                               FlatButton(
                                 child: Text("取消"),
                                 onPressed: () => Navigator.of(context).pop(), //关闭对话框
                               ),
                               FlatButton(
-                                child: Text("支付"),
+                                child: Text("${isPays ? '支付' : '充值'}"),
                                 onPressed: () {
-                                  pay(course.data.id, coupon!=null&&couponIndex!=-1?coupon.id:'');
+                                  if(isPays){
+                                    pay(course.data.id, coupon!=null&&couponIndex!=-1?coupon.id:'');
+                                  }else{
+                                    Navigator.pushNamed(context, '/recharge');
+                                  }
                                   Navigator.of(context).pop(true); //关闭对话框
                                 },
                               ),

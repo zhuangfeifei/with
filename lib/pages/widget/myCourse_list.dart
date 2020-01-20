@@ -43,7 +43,7 @@ class MyCourseList extends StatelessWidget {
                               top: 0, left: 0,
                               child: Container(
                                 width: ScreenAdaper.width(90), height: ScreenAdaper.height(26),
-                                padding: EdgeInsets.only(left: ScreenAdaper.width(6)),
+                                padding: EdgeInsets.only(left: ScreenAdaper.width(6), top: ScreenAdaper.height(3)),
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
                                     image: AssetImage('images/home_image32.png'), alignment: Alignment.centerLeft, fit: BoxFit.fill,

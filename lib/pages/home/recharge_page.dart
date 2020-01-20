@@ -30,7 +30,12 @@ class _RechargePageState extends State<RechargePage> {
 
     fluwx.responseFromPayment.listen((response){
       print(response);
-      getUserinfoMethod();
+      if(response.errCode == 0){
+        toast('充值成功！');
+        getUserinfoMethod();
+      }else{
+        toast('充值失败！');
+      }
     });
   }
 

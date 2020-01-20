@@ -24,6 +24,18 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
     super.initState();
     getUserinfo();
 
+    getCoupon();
+  }
+
+  void getUserinfo() async {
+    await getUserinfoMethod();
+    var data = await Storage.getString('userinfo');
+    setState(() {
+      userinfo = json.decode(data);
+    });
+  }
+
+  void getCoupon(){
     apiMethod('mycouponlist', 'post', {'Status': 1, 'PageSize': 100, 'PageIndex': 1}).then((res){
       print(res.data);
       var list = CouponModel.fromJson(res.data);
@@ -37,12 +49,17 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
     });
   }
 
-  void getUserinfo() async {
-    await getUserinfoMethod();
-    var data = await Storage.getString('userinfo');
-    setState(() {
-      userinfo = json.decode(data);
-    });
+
+  @override
+  void deactivate() {
+
+    var bools = ModalRoute.of(context).isCurrent;
+    print('=================$bools');
+    if (bools) {
+      getUserinfo();
+      getCoupon();
+    }
+
   }
 
 

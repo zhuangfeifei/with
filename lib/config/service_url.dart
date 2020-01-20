@@ -1,5 +1,6 @@
 const serviceUrl = 'https://www.proseer.cn/zcxypcstage/api';
-// const serviceUrl = 'http://192.168.2.11:8002/apitest/api/';
+// const serviceUrl = 'http://192.168.2.11:8002/apitest/api';
+// const serviceUrl = 'http://192.168.2.11:8002/api';
 const servicePath = {
     'getcache' : serviceUrl + '/user/getcache',   // 获取用户信息
     'captcha' : serviceUrl + '/user/captcha',   // 获取验证码
@@ -37,4 +38,5 @@ const servicePath = {
     'collectpl' : serviceUrl + '/combination/collect/pl',  // 批量收藏
     'myConsumption' : serviceUrl + '/order/app/my',  // 牛币记录
     'myPointinfo' : serviceUrl + '/point/pointinfo',  // 积分记录
+    'uploadfile' : serviceUrl + '/system/app/uploadfile',  // 生成分享海报
 };

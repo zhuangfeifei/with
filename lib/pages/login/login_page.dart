@@ -23,6 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   // String _userPhone = TextEditingController();
 
   FocusNode _commentFocus = FocusNode();
+  FocusNode _commentFocus1 = FocusNode();
 
   @override
   void initState() { 
@@ -74,17 +75,18 @@ class _LoginPageState extends State<LoginPage> {
   Timer time;
   void logins(){
     _commentFocus.unfocus();    // 失去焦点
+    _commentFocus1.unfocus();    // 失去焦点
     RegExp reg = RegExp(r"\d{6}$");
     if(reg.hasMatch(_code)){
       ProgressDialog.showProgress(context);
       apiMethod('quicklogin', 'post', {'Mobile': _phone, 'Captcha': _code}).then((res){
         ProgressDialog.dismiss(context);
         if(res.data['IsSuccess']){
-          toast('登录成功！');
+          // toast('登录成功！');
           Storage.setString('userinfo',  json.encode(res.data['Data']));
-          time = Timer(Duration(milliseconds:1000), (){
+          // time = Timer(Duration(milliseconds:1000), (){
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BottomPage()), (route) => route == null);
-          });
+          // });
         }else{
           toast(res.data['Message']);
         }
@@ -186,7 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                   Stack(
                     children: <Widget>[
                       TextField(
-                        focusNode: _commentFocus,
+                        focusNode: _commentFocus1,
                         keyboardType: TextInputType.phone,
                         style: TextStyle(fontSize: ScreenAdaper.size(30)),
                         inputFormatters: [WhitelistingTextInputFormatter.digitsOnly,LengthLimitingTextInputFormatter(6)],

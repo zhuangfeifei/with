@@ -229,11 +229,32 @@ class _MyCollectionPageState extends State<MyCollectionPage> {
                     SizedBox(width: ScreenAdaper.width(60),),
                     InkWell(
                       onTap: (){
-                        List array = [];
-                        for (var i = 0; i < myorderList.length; i++) {
-                          array.add(myorderList[i].id);
-                        }
-                        collectpl(array);
+                        showDialog<bool>(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text("温馨提示"),
+                              content: Text("您确定取消收藏吗?"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: Text("取消"),
+                                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                                ),
+                                FlatButton(
+                                  child: Text("确定"),
+                                  onPressed: () {
+                                    List array = [];
+                                    for (var i = 0; i < myorderList.length; i++) {
+                                      array.add(myorderList[i].id);
+                                    }
+                                    collectpl(array);
+                                    Navigator.of(context).pop(true); //关闭对话框
+                                  },
+                                ),
+                              ],
+                            );
+                          }
+                        );
                       },
                       child: Container(
                         width: ScreenAdaper.width(502), height: ScreenAdaper.height(82),

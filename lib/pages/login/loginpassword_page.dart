@@ -23,6 +23,7 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
   bool isPassword = true;
 
   FocusNode _commentFocus = FocusNode();
+  FocusNode _commentFocus1 = FocusNode();
 
   @override
   void initState() { 
@@ -35,17 +36,18 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
   Timer time;
   void logins(){
     _commentFocus.unfocus();    // 失去焦点
+    _commentFocus1.unfocus();    // 失去焦点
     RegExp reg = RegExp(r"^1\d{10}$");
     if(reg.hasMatch(_phone)){
       ProgressDialog.showProgress(context);
       apiMethod('login', 'post', {'Account': _phone, 'Pwd': _password}).then((res){
         ProgressDialog.dismiss(context);
         if(res.data['IsSuccess']){
-          toast('登录成功！');
+          // toast('登录成功！');
           Storage.setString('userinfo',  json.encode(res.data['Data']));
-          time = Timer(Duration(milliseconds:1000), (){
+          // time = Timer(Duration(milliseconds:1000), (){
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BottomPage()), (route) => route == null);
-          });
+          // });
         }else{
           toast(res.data['Message']);
         }
@@ -142,7 +144,7 @@ class _LoginpasswordPageState extends State<LoginpasswordPage> {
                   Stack(
                     children: <Widget>[
                       TextField(
-                        focusNode: _commentFocus,
+                        focusNode: _commentFocus1,
                         obscureText: isPassword,
                         style: TextStyle(fontSize: ScreenAdaper.size(30)),
                         decoration: InputDecoration(

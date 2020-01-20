@@ -61,13 +61,6 @@ class _StartPageState extends State<StartPage> {
     //配置视频地址
     setState(() {
       videoPlayerController = VideoPlayerController.network('https://zcxy.oss-cn-beijing.aliyuncs.com/App/loginVideo.mp4');
-      chewieController = ChewieController(
-        videoPlayerController: videoPlayerController,
-        aspectRatio: 750 / 1334, //宽高比
-        autoPlay: true, //自动播放
-        looping: true, //循环播放
-        showControls: false
-      );
     });
   }
 
@@ -126,7 +119,13 @@ class _StartPageState extends State<StartPage> {
               Container(
                 width: double.infinity, height: ScreenAdaper.getScreenHeight(), color: Colors.black,
                   child: Chewie(
-                    controller: chewieController,
+                    controller: ChewieController(
+                      videoPlayerController: videoPlayerController,
+                      aspectRatio: ScreenAdaper.width(750) / ScreenAdaper.height(1334), //宽高比
+                      autoPlay: true, //自动播放
+                      looping: true, //循环播放
+                      showControls: false
+                    ),
                   ),
               ),
               Positioned(
@@ -204,7 +203,7 @@ class _StartPageState extends State<StartPage> {
   @override
   void dispose() {
     videoPlayerController.dispose();
-    chewieController.dispose();
+    // chewieController.dispose();
     super.dispose();
   }
 }

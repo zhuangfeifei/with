@@ -21,6 +21,7 @@ class _SetpasswordPageState extends State<SetpasswordPage> {
   String _passwords = '';
 
   FocusNode _commentFocus = FocusNode();
+  FocusNode _commentFocus1 = FocusNode();
 
   @override
   void initState() { 
@@ -31,6 +32,7 @@ class _SetpasswordPageState extends State<SetpasswordPage> {
   Timer time;
   void setpasswords() async{
     _commentFocus.unfocus();    // 失去焦点
+    _commentFocus1.unfocus();    // 失去焦点
     RegExp reg = RegExp(r"^(?:(?=.*[a-zA-Z])(?=.*[0-9])).{6,30}$");
     if(reg.hasMatch(_password)){
       if(_password == _passwords){
@@ -113,7 +115,7 @@ class _SetpasswordPageState extends State<SetpasswordPage> {
                     },
                   ),
                   TextField(
-                    focusNode: _commentFocus,
+                    focusNode: _commentFocus1,
                     obscureText: true,
                     maxLength: 16,
                     decoration: InputDecoration(

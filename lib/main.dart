@@ -5,10 +5,18 @@ import 'package:provider/provider.dart';
 import './provider/counter.dart';
 import './provider/courseDetails.dart';
 import './provider/liveListProvider.dart';
+import './services/storage.dart';
+import 'dart:convert';
 
 void main()=>runApp(MyApp());
 
+
 class MyApp extends StatelessWidget {
+  var userinfo;
+  void getUserinfo() async {
+    var data = await Storage.getString('userinfo');
+    userinfo = json.decode(data);
+  }
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -24,7 +32,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primaryColor: Color(0xffFF8636),
           ),
-          initialRoute: '/',
+          initialRoute: userinfo!=null && userinfo['Mobile']!='' ? '/home' : '/',
           onGenerateRoute: onGenerateRoute,
         ),
       ),
