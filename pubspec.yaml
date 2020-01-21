@@ -38,7 +38,7 @@ dependencies:
   chewie: ^0.9.8+1
   flutter_html_widget: ^0.0.2
   flutter_ijkplayer: ^0.3.5+1
-  fluwx: 1.0.4
+  fluwx: ^1.2.1+1
   # 开启权限
   permission_handler: ^4.1.0
   # 保存图片
