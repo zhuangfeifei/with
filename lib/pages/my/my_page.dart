@@ -127,7 +127,7 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text('${userinfo['UserName']}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(32), fontWeight: FontWeight.bold),),
-                                Text('2019-09-09日学习「跟我跨境」', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(24)),)
+                                // Text('2019-09-09日学习「跟我跨境」', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(24)),)
                               ],
                             )
                           ],

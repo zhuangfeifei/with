@@ -76,7 +76,7 @@ class _LivecoursePageState extends State<LivecoursePage> with SingleTickerProvid
     controller.addListener(() => _onTabChanged());
 
     print(widget.arguments['collegeId']);
-    apiMethod('livestreamingdetail', 'get', '/3').then((res){
+    apiMethod('livestreamingdetail', 'get', '/${widget.arguments['collegeId']}').then((res){
       print(res.data);
       var list = LiveModel.fromJson(res.data);
       if(res.data['IsSuccess']){
@@ -127,6 +127,8 @@ class _LivecoursePageState extends State<LivecoursePage> with SingleTickerProvid
         setState(() {
           _getchatroomList.add({'Content': msg.msg, "IsSelf": false, 'logoUrl': msg.logoUrl});
         });
+         _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: new Duration(seconds: 2), curve: Curves.ease);
       }); // 接收消息
     };
     

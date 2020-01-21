@@ -58,39 +58,44 @@ class _StrategyPageState extends State<StrategyPage> {
                     child: ListView.builder(
                       itemCount: strategy.length, padding: EdgeInsets.all(0),
                       itemBuilder: (context, index){
-                        return Container(
-                          width: double.infinity, margin: EdgeInsets.only(bottom: ScreenAdaper.height(20),),
-                          padding: EdgeInsetsDirectional.fromSTEB(ScreenAdaper.width(30), ScreenAdaper.height(25), ScreenAdaper.width(30), ScreenAdaper.height(23)),
-                          decoration: BoxDecoration(
-                            color: Color(0xffFFFFFF), 
-                            borderRadius: BorderRadius.circular(6),
-                            boxShadow: [
-                              BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.1), offset: Offset(0, 0), blurRadius: 5),
-                            ] 
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start, 
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text('${strategy[index].title}', style: TextStyle(
-                                  color: Color(0xff000000), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold, height: ScreenAdaper.height(2.6),
+                        return InkWell(
+                          onTap: (){
+                            Navigator.pushNamed(context, '/strategyDetail', arguments: {'id': strategy[index].id});
+                          },
+                          child: Container(
+                            width: double.infinity, margin: EdgeInsets.only(bottom: ScreenAdaper.height(20),),
+                            padding: EdgeInsetsDirectional.fromSTEB(ScreenAdaper.width(30), ScreenAdaper.height(25), ScreenAdaper.width(30), ScreenAdaper.height(23)),
+                            decoration: BoxDecoration(
+                              color: Color(0xffFFFFFF), 
+                              borderRadius: BorderRadius.circular(6),
+                              boxShadow: [
+                                BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.1), offset: Offset(0, 0), blurRadius: 5),
+                              ] 
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start, 
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text('${strategy[index].title}', style: TextStyle(
+                                    color: Color(0xff000000), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold, height: ScreenAdaper.height(2.6),
+                                  ),
+                                  maxLines: 2, overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 2, overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(height: ScreenAdaper.height(8),),
-                              Text.rich(
-                                TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: '【${strategy[index].categoryId2Str}】', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(20), fontWeight: FontWeight.w400)
-                                    ),
-                                    TextSpan(
-                                      text: '${strategy[index].createTime}', style: TextStyle(color: Color(0xffA2A2A2), fontSize: ScreenAdaper.size(20), fontWeight: FontWeight.w400)
-                                    ),
-                                  ]
-                                )
-                              ),
-                            ],
+                                SizedBox(height: ScreenAdaper.height(8),),
+                                Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: '【${strategy[index].categoryId2Str}】', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(20), fontWeight: FontWeight.w400)
+                                      ),
+                                      TextSpan(
+                                        text: '${strategy[index].createTime}', style: TextStyle(color: Color(0xffA2A2A2), fontSize: ScreenAdaper.size(20), fontWeight: FontWeight.w400)
+                                      ),
+                                    ]
+                                  )
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },

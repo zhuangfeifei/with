@@ -56,108 +56,116 @@ class _ClassificationPageState extends State<ClassificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(top: ScreenAdaper.height(226)),
-            child: _classificationList==null ? Loading() : _classificationList.length > 0 ? EasyRefresh.custom(
-              header: BallPulseHeader(),
-              footer: BallPulseFooter(),
-              onRefresh: () async {
-                await Future.delayed(Duration(seconds: 2), () {
-                  setState(() {
-                    pageIndex = 1;
-                    getList(true);
+      body: Container(
+        color: Color(0xffFFFFFF),
+        child: Stack(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: ScreenAdaper.height(226)),
+              child: _classificationList==null ? Loading() : _classificationList.length > 0 ? EasyRefresh.custom(
+                header: BallPulseHeader(),
+                footer: BallPulseFooter(),
+                onRefresh: () async {
+                  await Future.delayed(Duration(seconds: 2), () {
+                    setState(() {
+                      pageIndex = 1;
+                      getList(true);
+                    });
                   });
-                });
-              },
-              onLoad: () async {
-                await Future.delayed(Duration(seconds: 2), () {
-                  setState(() {
-                    pageIndex += 1;
-                    getList(true);
+                },
+                onLoad: () async {
+                  await Future.delayed(Duration(seconds: 2), () {
+                    setState(() {
+                      pageIndex += 1;
+                      getList(true);
+                    });
                   });
-                });
-              },
-              slivers: <Widget>[
-                SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    return InkWell(
-                        child: _classificationList.length > 0 ? ClassificationList(item:_classificationList[index]) : Loading(),
-                      );
-                    },
-                    childCount: _classificationList.length,
-                  ),
-                ),
-              ],
-            ) : Container(
-              color: Color(0xffFFFFFF),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image.asset('images/Lack_image01.png', width: ScreenAdaper.width(280), height: ScreenAdaper.height(220),),
-                    SizedBox(height: ScreenAdaper.height(35),),
-                    Text('暂时没有相关信息', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(28), fontWeight: FontWeight.normal, fontFamily: 'Adobe Heiti Std'),)
-                  ],
-                ),
-              )
-            ),
-          ),
-          // _classificationList.length > 0 ? Container(
-          //   padding: EdgeInsets.only(top: ScreenAdaper.height(226)),
-          //   child: ListView.builder(
-          //     padding: EdgeInsets.only(top: ScreenAdaper.height(20)),
-          //     itemCount: _classificationList.length,
-          //     itemBuilder: (context, index){
-          //       return InkWell(
-          //         child: _classificationList.length > 0 ? ClassificationList(item:_classificationList[index]) : Loading(),
-          //       );
-          //     },
-          //   ),
-          // ): Container(
-          //   color: Color(0xffFFFFFF),
-          //   child: Center(
-          //     child: Image.asset('images/Lack_image01.png', width: ScreenAdaper.width(280), height: ScreenAdaper.height(220),),
-          //   )
-          // ),
-          Positioned(
-            child: Container(
-              color: Color(0xffFFFFFF), height: ScreenAdaper.height(226),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    width: double.infinity, height: ScreenAdaper.height(127),
-                    padding: EdgeInsets.only(top: ScreenAdaper.height(30)),
-                    child: Stack(
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.centerLeft, 
-                          child: InkWell(
-                            onTap: (){
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.only(left: ScreenAdaper.width(30)),
-                              width: ScreenAdaper.width(80), height: ScreenAdaper.height(30), alignment: Alignment.bottomLeft,
-                              child: Image.asset('images/home_image29.png', width: ScreenAdaper.width(16)),
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text('跟我学', style: TextStyle(color: Color(0xff000000), fontSize: ScreenAdaper.size(34), fontWeight: FontWeight.bold, fontFamily: 'PingFang SC'),),
-                        )
-                      ],
+                },
+                slivers: <Widget>[
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return InkWell(
+                          child: _classificationList.length > 0 ? index == 0 ? Column(
+                            children: <Widget>[
+                              SizedBox(height: ScreenAdaper.height(20),),
+                              ClassificationList(item:_classificationList[index])
+                            ],
+                          ) : ClassificationList(item:_classificationList[index]) : Loading(),
+                        );
+                      },
+                      childCount: _classificationList.length,
                     ),
                   ),
-                  Divider(height: ScreenAdaper.height(1), color: Color(0xffEFEFEF),),
-                  _tabList()
                 ],
+              ) : Container(
+                color: Color(0xffFFFFFF),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Image.asset('images/Lack_image01.png', width: ScreenAdaper.width(280), height: ScreenAdaper.height(220),),
+                      SizedBox(height: ScreenAdaper.height(35),),
+                      Text('暂时没有相关信息', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(28), fontWeight: FontWeight.normal, fontFamily: 'Adobe Heiti Std'),)
+                    ],
+                  ),
+                )
               ),
             ),
-          )
-        ],
+            // _classificationList.length > 0 ? Container(
+            //   padding: EdgeInsets.only(top: ScreenAdaper.height(226)),
+            //   child: ListView.builder(
+            //     padding: EdgeInsets.only(top: ScreenAdaper.height(20)),
+            //     itemCount: _classificationList.length,
+            //     itemBuilder: (context, index){
+            //       return InkWell(
+            //         child: _classificationList.length > 0 ? ClassificationList(item:_classificationList[index]) : Loading(),
+            //       );
+            //     },
+            //   ),
+            // ): Container(
+            //   color: Color(0xffFFFFFF),
+            //   child: Center(
+            //     child: Image.asset('images/Lack_image01.png', width: ScreenAdaper.width(280), height: ScreenAdaper.height(220),),
+            //   )
+            // ),
+            Positioned(
+              child: Container(
+                color: Color(0xffFFFFFF), height: ScreenAdaper.height(226),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: double.infinity, height: ScreenAdaper.height(127),
+                      padding: EdgeInsets.only(top: ScreenAdaper.height(30)),
+                      child: Stack(
+                        children: <Widget>[
+                          Align(
+                            alignment: Alignment.centerLeft, 
+                            child: InkWell(
+                              onTap: (){
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.only(left: ScreenAdaper.width(30)),
+                                width: ScreenAdaper.width(80), height: ScreenAdaper.height(30), alignment: Alignment.bottomLeft,
+                                child: Image.asset('images/home_image29.png', width: ScreenAdaper.width(16)),
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text('跟我学', style: TextStyle(color: Color(0xff000000), fontSize: ScreenAdaper.size(34), fontWeight: FontWeight.bold, fontFamily: 'PingFang SC'),),
+                          )
+                        ],
+                      ),
+                    ),
+                    Divider(height: ScreenAdaper.height(1), color: Color(0xffEFEFEF),),
+                    _tabList()
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

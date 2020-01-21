@@ -33,7 +33,7 @@ class MyCourseList extends StatelessWidget {
                         Stack(
                           children: <Widget>[
                             Container(
-                              width: ScreenAdaper.width(162), height: ScreenAdaper.height(220),
+                              width: ScreenAdaper.width(162), height: ScreenAdaper.width(222),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(3),
                                 child: Image.network('${item.teacherImg}', fit: BoxFit.fill,),
@@ -59,7 +59,7 @@ class MyCourseList extends StatelessWidget {
                           child: Stack(
                             children: <Widget>[
                               Container(
-                                width: double.infinity, height: ScreenAdaper.height(220),
+                                width: double.infinity, height: ScreenAdaper.width(222),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[

@@ -202,7 +202,7 @@ class _PayPageState extends State<PayPage> {
                               child: Row(
                                 children: <Widget>[
                                   Text('${course.data.collegeClass.length}课时 • ', style: TextStyle(color: Color(0xffA2A2A2), fontSize: ScreenAdaper.size(18))),
-                                  Text('￥${convertNum(course.data.collegePrice)}', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(18))),
+                                  Text('￥${convertNum(course.data.salePrice)}', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(18))),
                                 ],
                               ),
                             )
@@ -246,7 +246,7 @@ class _PayPageState extends State<PayPage> {
                 ),
                 SizedBox(height: ScreenAdaper.height(20),),
                 // 金额
-                _balance > course.data.collegePrice ? Container(
+                _balance > course.data.salePrice ? Container(
                   width: double.infinity, height: ScreenAdaper.height(86), padding: EdgeInsets.symmetric(horizontal: ScreenAdaper.width(34)),
                   decoration: BoxDecoration(
                     color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(6)
@@ -285,7 +285,7 @@ class _PayPageState extends State<PayPage> {
                             SizedBox(width: ScreenAdaper.width(27),),
                             Text('牛币', style: TextStyle(color: Color(0xff090909), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold),), 
                             SizedBox(width: ScreenAdaper.width(15),),
-                            Text('￥${convertNum(course.data.collegePrice)}（不足支付）', style: TextStyle(color: Color(0xffC1C1C1), fontSize: ScreenAdaper.size(22)),),
+                            Text('￥${convertNum(course.data.salePrice)}（不足支付）', style: TextStyle(color: Color(0xffC1C1C1), fontSize: ScreenAdaper.size(22)),),
                           ],
                         ),
                         Text('去充值', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(26), fontWeight: FontWeight.bold),)
@@ -324,7 +324,7 @@ class _PayPageState extends State<PayPage> {
                     Row(
                       children: <Widget>[
                         Text('应付：', style: TextStyle(color: Color(0xff3B3B3B), fontSize: ScreenAdaper.size(26)),), 
-                        Text('￥${convertNum(course.data.collegePrice - (coupon!=null&&couponIndex!=-1?coupon.price:0))}', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(34), fontWeight: FontWeight.bold),),
+                        Text('￥${convertNum(course.data.salePrice - (coupon!=null&&couponIndex!=-1?coupon.price:0))}', style: TextStyle(color: Color(0xffFF8636), fontSize: ScreenAdaper.size(34), fontWeight: FontWeight.bold),),
                       ],
                     ),
                     InkWell(
@@ -332,7 +332,7 @@ class _PayPageState extends State<PayPage> {
                         showDialog<bool>(
                         context: context,
                         builder: (context) {
-                          var isPays = course.data.collegePrice > _balance ? false : true;
+                          var isPays = course.data.salePrice > _balance ? false : true;
                           return AlertDialog(
                             title: Text("温馨提示"),
                             content: Text("${isPays ? '您确定要支付吗?' : '余额不足请前往充值！'}"),

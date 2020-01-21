@@ -80,6 +80,7 @@ class _MyCollectionPageState extends State<MyCollectionPage> {
                 key: myorderList[index].id.toString(),
                 child: Container(
                   width: double.infinity, height: ScreenAdaper.height(300),
+                  margin: EdgeInsets.only(bottom: ScreenAdaper.height(10)), 
                   child: Stack(
                     children: <Widget>[
                       InkWell(

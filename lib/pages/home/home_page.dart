@@ -287,7 +287,7 @@ class _Header extends StatelessWidget {
               width: ScreenAdaper.width(750),
               padding: EdgeInsetsDirectional.fromSTEB(ScreenAdaper.width(30), 0, ScreenAdaper.width(30), 0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   InkWell(
                     onTap: (){
@@ -320,6 +320,7 @@ class _Header extends StatelessWidget {
                       ),
                     ),
                   ),
+                  SizedBox(width: ScreenAdaper.width(40),),
                   InkWell(
                     onTap: (){
                       Navigator.pushNamed(context, '/consulting');

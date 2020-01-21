@@ -55,7 +55,7 @@ class SearchList extends StatelessWidget {
                       Stack(
                         children: <Widget>[
                           Container(
-                            width: ScreenAdaper.width(162), height: ScreenAdaper.height(220),
+                            width: ScreenAdaper.width(162), height: ScreenAdaper.width(222),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(3),
                               child: Image.network('${item.teacherImg}', fit: BoxFit.fill,),
@@ -81,7 +81,7 @@ class SearchList extends StatelessWidget {
                         child: Stack(
                           children: <Widget>[
                             Container(
-                              width: double.infinity, height: ScreenAdaper.height(220),
+                              width: double.infinity, height: ScreenAdaper.width(222),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
@@ -112,10 +112,10 @@ class SearchList extends StatelessWidget {
                     ],
                   ),
                 ),
-                item.isHaveFree ? Positioned(
+                item.isHaveFree && item.salePrice > 0 ? Positioned(
                   top: 0, right: 0,
                   child: Container(
-                    width: ScreenAdaper.width(102), height: ScreenAdaper.height(60),
+                    width: ScreenAdaper.width(102),
                     child: Image.asset('images/home_image33.png', fit: BoxFit.fill,),
                   ),
                 ) : Container(),
@@ -136,7 +136,7 @@ class SearchList extends StatelessWidget {
                   TextSpan(
                     children: [
                       TextSpan(text: '￥', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(16))),
-                      TextSpan(text: '${convertNum(item.collegePrice)}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(27))),
+                      TextSpan(text: '${convertNum(item.salePrice)}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(27))),
                       TextSpan(text: '购买', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(16))),
                     ]
                   )

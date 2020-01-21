@@ -1311,7 +1311,7 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('购买：${convertNum(_course.data.collegePrice)}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(34)),),
+                  Text('购买：${convertNum(_course.data.salePrice)}', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(34)),),
                   Text('牛币', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(22)),),
                 ],
               ),

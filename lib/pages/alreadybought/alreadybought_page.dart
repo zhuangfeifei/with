@@ -53,34 +53,37 @@ class _AlreadyboughtPageState extends State<AlreadyboughtPage> with AutomaticKee
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: myorderList==null ? Loading() : myorderList.length > 0 ? Container(
-          color: Colors.black, padding: EdgeInsets.only(top: ScreenAdaper.getStatusBarHeight()),
-          child: Container(
+    return Container(
+      color: Color(0xffFFFFFF),
+      child: Scaffold(
+        body: RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: myorderList==null ? Loading() : myorderList.length > 0 ? Container(
+            color: Colors.black, padding: EdgeInsets.only(top: ScreenAdaper.getStatusBarHeight()),
+            child: Container(
+              color: Color(0xffFFFFFF),
+              child: ListView.builder(
+                padding: EdgeInsets.only(top: ScreenAdaper.height(20)),
+                itemCount: myorderList.length,
+                itemBuilder: (context, index){
+                  var item = myorderList[index];
+                  return MyCourseList(item: item);
+                },
+              ),
+            ),
+          ) : Container(
             color: Color(0xffFFFFFF),
-            child: ListView.builder(
-              padding: EdgeInsets.only(top: ScreenAdaper.height(20)),
-              itemCount: myorderList.length,
-              itemBuilder: (context, index){
-                var item = myorderList[index];
-                return MyCourseList(item: item);
-              },
-            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image.asset('images/Lack_image01.png', width: ScreenAdaper.width(280), height: ScreenAdaper.height(220),),
+                  SizedBox(height: ScreenAdaper.height(35),),
+                  Text('暂时没有相关信息', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(28), fontWeight: FontWeight.normal, fontFamily: 'Adobe Heiti Std'),)
+                ],
+              ),
+            )
           ),
-        ) : Container(
-          color: Color(0xffFFFFFF),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image.asset('images/Lack_image01.png', width: ScreenAdaper.width(280), height: ScreenAdaper.height(220),),
-                SizedBox(height: ScreenAdaper.height(35),),
-                Text('暂时没有相关信息', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(28), fontWeight: FontWeight.normal, fontFamily: 'Adobe Heiti Std'),)
-              ],
-            ),
-          )
         ),
       ),
     );

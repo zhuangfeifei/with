@@ -53,81 +53,88 @@ class _CoursecenterPageState extends State<CoursecenterPage> with AutomaticKeepA
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(top: ScreenAdaper.height(98)+ScreenAdaper.getStatusBarHeight()),
-            child: _classificationList ==null ? Loading() : _classificationList.length > 0 ? EasyRefresh.custom(
-              header: BallPulseHeader(),
-              footer: BallPulseFooter(),
-              onRefresh: () async {
-                await Future.delayed(Duration(seconds: 1), () {
-                  setState(() {
-                    pageIndex = 1;
-                    getList(true);
+      body: Container(
+        color: Color(0xffFFFFFF),
+        child: Stack(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: ScreenAdaper.height(98)+ScreenAdaper.getStatusBarHeight()),
+              child: _classificationList ==null ? Loading() : _classificationList.length > 0 ? EasyRefresh.custom(
+                header: BallPulseHeader(),
+                footer: BallPulseFooter(),
+                onRefresh: () async {
+                  await Future.delayed(Duration(seconds: 1), () {
+                    setState(() {
+                      pageIndex = 1;
+                      getList(true);
+                    });
                   });
-                });
-              },
-              onLoad: () async {
-                await Future.delayed(Duration(seconds: 1), () {
-                  setState(() {
-                    pageIndex += 1;
-                    getList(true);
+                },
+                onLoad: () async {
+                  await Future.delayed(Duration(seconds: 1), () {
+                    setState(() {
+                      pageIndex += 1;
+                      getList(true);
+                    });
                   });
-                });
-              },
-              slivers: <Widget>[
-                // SizedBox(height: ScreenAdaper.height(20),),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    return InkWell(
-                        child: _classificationList.length > 0 ? ClassificationList(item:_classificationList[index]) : Loading(),
-                      );
-                    },
-                    childCount: _classificationList.length,
+                },
+                slivers: <Widget>[
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return InkWell(
+                          child: _classificationList.length > 0 ? index == 0 ? Column(
+                            children: <Widget>[
+                              SizedBox(height: ScreenAdaper.height(20),),
+                              ClassificationList(item:_classificationList[index])
+                            ],
+                          ) : ClassificationList(item:_classificationList[index]) : Loading(),
+                        );
+                      },
+                      childCount: _classificationList.length,
+                    ),
                   ),
-                ),
-              ],
-            ) : Container(
-              color: Color(0xffFFFFFF),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image.asset('images/Lack_image01.png', width: ScreenAdaper.width(280), height: ScreenAdaper.height(220),),
-                    SizedBox(height: ScreenAdaper.height(35),),
-                    Text('暂时没有相关信息', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(28), fontWeight: FontWeight.normal, fontFamily: 'Adobe Heiti Std'),)
-                  ],
-                ),
-              )
-            ),
-          ),
-          Positioned(
-            // top: ScreenAdaper.getStatusBarHeight(), left: 0,
-            child: Container(
-              color: Colors.black, height: ScreenAdaper.height(98) + ScreenAdaper.getStatusBarHeight(),
-              padding: EdgeInsets.only(top: ScreenAdaper.getStatusBarHeight()),
-              child: Column(
-                children: <Widget>[
-                  // Container(
-                  //   width: double.infinity, height: ScreenAdaper.height(127),
-                  //   padding: EdgeInsets.only(top: ScreenAdaper.height(30)),
-                  //   child: Stack(
-                  //     children: <Widget>[
-                  //       Align(
-                  //         alignment: Alignment.center,
-                  //         child: Text('课程中心', style: TextStyle(color: Color(0xff000000), fontSize: ScreenAdaper.size(34), fontWeight: FontWeight.bold, fontFamily: 'PingFang SC'),),
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
-                  // Divider(height: ScreenAdaper.height(1), color: Color(0xffEFEFEF),),
-                  _tabList()
                 ],
+              ) : Container(
+                color: Color(0xffFFFFFF),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Image.asset('images/Lack_image01.png', width: ScreenAdaper.width(280), height: ScreenAdaper.height(220),),
+                      SizedBox(height: ScreenAdaper.height(35),),
+                      Text('暂时没有相关信息', style: TextStyle(color: Color(0xff909090), fontSize: ScreenAdaper.size(28), fontWeight: FontWeight.normal, fontFamily: 'Adobe Heiti Std'),)
+                    ],
+                  ),
+                )
               ),
             ),
-          )
-        ],
+            Positioned(
+              // top: ScreenAdaper.getStatusBarHeight(), left: 0,
+              child: Container(
+                color: Colors.black, height: ScreenAdaper.height(98) + ScreenAdaper.getStatusBarHeight(),
+                padding: EdgeInsets.only(top: ScreenAdaper.getStatusBarHeight()),
+                child: Column(
+                  children: <Widget>[
+                    // Container(
+                    //   width: double.infinity, height: ScreenAdaper.height(127),
+                    //   padding: EdgeInsets.only(top: ScreenAdaper.height(30)),
+                    //   child: Stack(
+                    //     children: <Widget>[
+                    //       Align(
+                    //         alignment: Alignment.center,
+                    //         child: Text('课程中心', style: TextStyle(color: Color(0xff000000), fontSize: ScreenAdaper.size(34), fontWeight: FontWeight.bold, fontFamily: 'PingFang SC'),),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
+                    // Divider(height: ScreenAdaper.height(1), color: Color(0xffEFEFEF),),
+                    _tabList()
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
