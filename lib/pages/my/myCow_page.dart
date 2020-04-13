@@ -409,7 +409,7 @@ class _MyCowPageState extends State<MyCowPage> {
                         ],
                       ),
                       SizedBox(height: ScreenAdaper.height(13),),
-                      Text('${item.dateTime2.substring(0, 9)}', style: TextStyle(color: Color(0xffC2C2C2), fontSize: ScreenAdaper.size(26), height: 1),),
+                      Text('${item.dateTime2.substring(0, 10)}', style: TextStyle(color: Color(0xffC2C2C2), fontSize: ScreenAdaper.size(26), height: 1),),
                     ],
                   ),
                 );

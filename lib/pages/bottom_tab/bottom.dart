@@ -38,7 +38,7 @@ class _BottomPageState extends State<BottomPage> {
           BottomNavigationBarItem(
             icon: Image.asset('images/home_image14.png', width: ScreenAdaper.width(40), height: ScreenAdaper.width(40),),
             activeIcon: Image.asset('images/home_image15.png', width: ScreenAdaper.width(40), height: ScreenAdaper.width(40),),
-            title:Text('发现')
+            title:Text('跟我学')
           ),
           BottomNavigationBarItem(
             icon: Image.asset('images/home_image16.png', width: ScreenAdaper.width(42), height: ScreenAdaper.height(40),),

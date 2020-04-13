@@ -232,7 +232,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
             liveList !=null && liveList.data.length > 0 ? _Liveing(liveLists: liveList) : Container(),
             Divider(height: ScreenAdaper.height(liveList !=null && liveList.data.length > 0 ? 20 : 0), color: Color(0xffF8F8F8),),
             // 预告
-            _Trailer(isCircles: _isCircles, onChanged: _onChange, bookCollegeLists: _homeList.data.bookCollegeList, bookLsRoomLists: _homeList.data.bookLsRoomList, homeMethods: getHome),
+            _homeList.data.bookCollegeList.length > 0 || _homeList.data.bookLsRoomList.length > 0 ?
+            _Trailer(isCircles: _isCircles, onChanged: _onChange, bookCollegeLists: _homeList.data.bookCollegeList, bookLsRoomLists: _homeList.data.bookLsRoomList, homeMethods: getHome)
+            : Container(),
             Container(height: ScreenAdaper.height(20), color: Color(0xffF8F8F8),),
             // 今日热点
             _Hot(hotCollegeLists: _homeList.data.hotCollegeList),
@@ -752,7 +754,7 @@ class _Trailer extends StatelessWidget {
                 color: Color.fromRGBO(0, 0, 0, 0.5),
                 child: Center(
                   child: Container( 
-                    width: ScreenAdaper.width(509), height: ScreenAdaper.height(600),
+                    width: ScreenAdaper.width(509), height: ScreenAdaper.height(700),
                     child: Column(
                       children: <Widget>[
                         Container(
@@ -764,9 +766,12 @@ class _Trailer extends StatelessWidget {
                             children: <Widget>[
                               Image.asset('images/close_image31.png', width: ScreenAdaper.width(509),),
                               SizedBox(height: ScreenAdaper.height(50),),
-                              Text('“${bookLsRoomLists[index].title}”直播课程', style: TextStyle(
-                                color: Color(0xff000000), fontSize: ScreenAdaper.size(28), fontWeight: FontWeight.bold
-                              ),),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: ScreenAdaper.width(20)),
+                                child: Text('“${bookLsRoomLists[index].title}”直播课', style: TextStyle(
+                                  color: Color(0xff000000), fontSize: ScreenAdaper.size(28), fontWeight: FontWeight.bold, height: 1.2
+                                ), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,),
+                              ),
                               Text.rich(
                                 TextSpan(
                                   children: [
@@ -782,7 +787,7 @@ class _Trailer extends StatelessWidget {
                                   ]
                                 )
                               ),
-                              SizedBox(height: ScreenAdaper.height(50),),
+                              SizedBox(height: ScreenAdaper.height(30),),
                               RaisedButton(
                                 onPressed: (){
                                   book(context, bookLsRoomLists[index].id);

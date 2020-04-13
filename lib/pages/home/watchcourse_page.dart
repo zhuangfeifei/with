@@ -80,9 +80,9 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
     controller = TabController(initialIndex: 0, length: _tab.length, vsync: this);
     controller.addListener(() => _onTabChanged());
 
-    print(widget.arguments['collegeId']);
+    // print(widget.arguments['collegeId']);
     apiMethod('collegedetailforapp', 'get', '/${widget.arguments['collegeId']}').then((res){
-      print(res.data);
+      // print(res.data);
       var list = WatchcourseModel.fromJson(res.data);
       if(res.data['IsSuccess']){
         setState(() {
@@ -107,7 +107,7 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
 
 
     fluwx.responseFromShare.listen((response){
-      print(response);
+      // print(response);
     });
 
     
@@ -168,7 +168,7 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
     });
   }
   void shares(){
-    print('==============================${shareImg}');
+    // print('==============================${shareImg}');
     fluwx.share(fluwx.WeChatShareImageModel(
       image: shareImg,
       thumbnail: '',
@@ -181,7 +181,7 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
   // 获取权限
   void getPermission(){
     var permission =  PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
-    print("permission status is " + permission.toString());
+    // print("permission status is " + permission.toString());
     PermissionHandler().requestPermissions(<PermissionGroup>[
       PermissionGroup.storage, // 在这里添加需要的权限
     ]);
@@ -196,7 +196,7 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
   // 保存海报
   void _savePosters() async{
     final result = await ImageGallerySaver.saveImage(images); //这个是核心的保存图片的插件
-    print(result);   //这个返回值 在保存成功后会返回true
+    // print(result);   //这个返回值 在保存成功后会返回true
     ProgressDialog.dismiss(context);
     setState(() {
       isSavePosters = true;
@@ -215,7 +215,7 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
       isCollect = !isCollect;
     });
     apiMethod('collect', 'post', {'TargetType': 3, 'TargetId': data.id, 'Oper': isCollect?1:0}).then((res){
-      print(res.data);
+      // print(res.data);
       if(res.data['IsSuccess']){
         
       }  
@@ -230,7 +230,7 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
     ProgressDialog.showProgress(context);
     apiMethod('addvaluate', 'post', {'CollegeId': widget.arguments['collegeId'], 'Content': _inputValue, 'Score': 5, 'TargetId': ''}).then((res){
       ProgressDialog.dismiss(context);
-      print(res.data);
+      // print(res.data);
       if(res.data['IsSuccess']){
         toast('评价成功！');
         setState(() {
@@ -258,7 +258,7 @@ class _WatchcoursePageState extends State<WatchcoursePage> with SingleTickerProv
       this.flag = false;
     });
     apiMethod('getevaluate', 'post', {'CollegeId': _course.data.collegeId, 'PageIndex': pageIndex, 'PageSize': 10}).then((res){
-      print(res.data);
+      // print(res.data);
       if(res.data['IsSuccess']){
         var list = EvaluationListModel.fromJson(res.data);
         if (_evaluationList.length < 10) {

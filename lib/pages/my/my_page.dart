@@ -37,7 +37,7 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
 
   void getCoupon(){
     apiMethod('mycouponlist', 'post', {'Status': 1, 'PageSize': 100, 'PageIndex': 1}).then((res){
-      print(res.data);
+      // print(res.data);
       var list = CouponModel.fromJson(res.data);
       if(res.data['IsSuccess']){
         setState(() {
@@ -54,7 +54,7 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
   void deactivate() {
 
     var bools = ModalRoute.of(context).isCurrent;
-    print('=================$bools');
+    // print('=================$bools');
     if (bools) {
       getUserinfo();
       getCoupon();
@@ -271,7 +271,7 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
                     children: <Widget>[
                       getInk('images/home_image86.png', '我的勋章', ''),
                       getInk('images/home_image87.png', '帮助与反馈', ''),
-                      getInk('images/home_image88.png', '设置', ''),
+                      getInk('images/home_image88.png', '设置', '/setup'),
                     ],
                   ),
                 ],

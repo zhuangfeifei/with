@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -68,7 +69,7 @@ class _StartPageState extends State<StartPage> {
   // 判断用户有没有登录过
   void getUser() async{
     var userinfo = await Storage.getString('userinfo');
-    var phone = json.decode(userinfo)['Mobile'];
+    var phone = userinfo!=null ? json.decode(userinfo)['Mobile'] : '';
     // 如果登录过直接跳首页
     if(phone!='') Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => BottomPage()), (route) => route == null);
   }
@@ -102,7 +103,7 @@ class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
 
-    ScreenAdaper.init(context);
+    // ScreenAdaper.init(context);
 
     return Scaffold(
         body: Container(

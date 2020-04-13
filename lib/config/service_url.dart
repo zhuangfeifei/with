@@ -1,4 +1,4 @@
-const serviceUrl = 'https://www.proseer.cn/zcxypcstage/api';
+const serviceUrl = 'https://www.proseer.cn/zcxypc/api';
 // const serviceUrl = 'http://192.168.2.11:8002/apitest/api';
 // const serviceUrl = 'http://192.168.2.11:8002/api';
 const servicePath = {

@@ -77,7 +77,7 @@ class _LivecoursePageState extends State<LivecoursePage> with SingleTickerProvid
 
     print(widget.arguments['collegeId']);
     apiMethod('livestreamingdetail', 'get', '/${widget.arguments['collegeId']}').then((res){
-      print(res.data);
+      // print(res.data);
       var list = LiveModel.fromJson(res.data);
       if(res.data['IsSuccess']){
         setState(() {
@@ -110,11 +110,13 @@ class _LivecoursePageState extends State<LivecoursePage> with SingleTickerProvid
   }
 
   var logoUrl;
+  var userName;
   void getLogo() async {
     var userinfo = await Storage.getString('userinfo');
     setState(() {
       token = json.decode(userinfo)['Token'];
       logoUrl = json.decode(userinfo)['LogoUrl'];
+      userName = json.decode(userinfo)['UserName'];
     });
   }
 
@@ -125,7 +127,7 @@ class _LivecoursePageState extends State<LivecoursePage> with SingleTickerProvid
       data.msgStream.listen((msg){
         print(msg.name + ":" + msg.msg);
         setState(() {
-          _getchatroomList.add({'Content': msg.msg, "IsSelf": false, 'logoUrl': msg.logoUrl});
+          _getchatroomList.add({'Content': msg.msg, "IsSelf": false, 'logoUrl': msg.logoUrl, 'UserName': msg.name});
         });
          _scrollController.animateTo(_scrollController.position.maxScrollExtent,
         duration: new Duration(seconds: 2), curve: Curves.ease);
@@ -142,8 +144,9 @@ class _LivecoursePageState extends State<LivecoursePage> with SingleTickerProvid
   FocusNode _commentFocus = FocusNode();
   void sendM(){
     ctRoomService.send(_inputValue);
+    print(userName);
     setState(() {
-      _getchatroomList.add({'Content': _inputValue, "IsSelf": true, 'logoUrl': logoUrl});
+      _getchatroomList.add({'Content': _inputValue, "IsSelf": true, 'logoUrl': logoUrl, 'UserName': userName});
     });
     _textController.clear();
     _commentFocus.unfocus();    // 失去焦点
@@ -281,125 +284,131 @@ class _LivecoursePageState extends State<LivecoursePage> with SingleTickerProvid
         color: Color(0xffFFFFFF),
         child: _livestreamingdetail !=null ? Stack(
           children: <Widget>[
-            CustomScrollView(
-              controller: _scrollController, 
-              slivers: <Widget>[
-                SliverToBoxAdapter(
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        color: Colors.black, padding: EdgeInsets.only(top: ScreenAdaper.getStatusBarHeight()),
-                        //视频播放器
-                        child: Stack(
-                          children: <Widget>[
-                            Container(
+            Container(
+              // color: Colors.yellow,
+              child: ListView(
+                controller: _scrollController,
+                padding: EdgeInsets.only(top: ScreenAdaper.height(840)),
+                children: <Widget>[
+                  _tabIndex == 0 ? _introduction() : _evaluation()
+                ],
+              ),
+            ),
+            Positioned(
+              top: 0, left: 0,
+              child: Container(
+                color: Color(0xffFFFFFF),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      color: Colors.black, padding: EdgeInsets.only(top: ScreenAdaper.getStatusBarHeight()),
+                      //视频播放器
+                      child: Stack(
+                        children: <Widget>[
+                          Container(
+                            width: ScreenAdaper.width(750),
+                            child: AspectRatio(
+                              aspectRatio: 75/44,
+                              // 如果有地址就显示播放器
+                              child: videoUrl !='' ? IjkPlayer(
+                                mediaController: controllerVideo,    
+                              ) : Image.network('${_livestreamingdetail.data.img}', fit: BoxFit.fill,), // 视频封面
+                            ),
+                          ),
+                          Positioned(
+                            top: ScreenAdaper.width(36), left: ScreenAdaper.width(20),
+                            child: InkWell(
+                              onTap: (){
+                                Navigator.pop(context);
+                              },
+                              child: ClipOval(
+                                child: Container(
+                                  width: ScreenAdaper.width(52), height: ScreenAdaper.width(52), color: Color.fromRGBO(0, 0, 0, 0.3),
+                                  child: Center(
+                                    child: Image.asset('images/home_image28.png', width: ScreenAdaper.width(13), height: ScreenAdaper.height(25),),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          _livestreamingdetail.data.status == 2 && _livestreamingdetail.data.isOnline==0 ? Positioned(
+                            top: 0, left: 0,
+                            child: Container(
                               width: ScreenAdaper.width(750),
                               child: AspectRatio(
                                 aspectRatio: 75/44,
-                                // 如果有地址就显示播放器
-                                child: videoUrl !='' ? IjkPlayer(
-                                  mediaController: controllerVideo,    
-                                ) : Image.network('${_livestreamingdetail.data.img}', fit: BoxFit.fill,), // 视频封面
-                              ),
-                            ),
-                            Positioned(
-                              top: ScreenAdaper.width(36), left: ScreenAdaper.width(20),
-                              child: InkWell(
-                                onTap: (){
-                                  Navigator.pop(context);
-                                },
-                                child: ClipOval(
+                                child: Center(
                                   child: Container(
-                                    width: ScreenAdaper.width(52), height: ScreenAdaper.width(52), color: Color.fromRGBO(0, 0, 0, 0.3),
+                                    width: ScreenAdaper.width(550), height: ScreenAdaper.height(88), 
+                                    decoration: BoxDecoration(
+                                      color: Color.fromRGBO(255, 255, 255, 0.3), borderRadius: BorderRadius.circular(5)
+                                    ),
                                     child: Center(
-                                      child: Image.asset('images/home_image28.png', width: ScreenAdaper.width(13), height: ScreenAdaper.height(25),),
+                                      child: Text('该直播于${_livestreamingdetail.data.onlineTime}开始', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(32)),),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            _livestreamingdetail.data.status == 2 && _livestreamingdetail.data.isOnline==0 ? Positioned(
-                              top: 0, left: 0,
-                              child: Container(
-                                width: ScreenAdaper.width(750),
-                                child: AspectRatio(
-                                  aspectRatio: 75/44,
-                                  child: Center(
-                                    child: Container(
-                                      width: ScreenAdaper.width(550), height: ScreenAdaper.height(88), 
-                                      decoration: BoxDecoration(
-                                        color: Color.fromRGBO(255, 255, 255, 0.3), borderRadius: BorderRadius.circular(5)
-                                      ),
-                                      child: Center(
-                                        child: Text('该直播于${_livestreamingdetail.data.onlineTime}开始', style: TextStyle(color: Color(0xffFFFFFF), fontSize: ScreenAdaper.size(32)),),
-                                      ),
-                                    ),
+                            )
+                          ):Container(),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsetsDirectional.fromSTEB(ScreenAdaper.width(30), ScreenAdaper.height(20), ScreenAdaper.width(30), 0), 
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('${_livestreamingdetail.data.title}', style: TextStyle(color: Color(0xfff000000), fontSize: ScreenAdaper.size(32), fontWeight: FontWeight.bold),
+                            maxLines: 2, overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: ScreenAdaper.height(8),),
+                          Text('讲师：${_livestreamingdetail.data.teacherName}', style: TextStyle(color: Color(0xfff000000), fontSize: ScreenAdaper.size(22)),),
+                          SizedBox(height: ScreenAdaper.height(20),),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Column(
+                                children: <Widget>[
+                                  SizedBox(height: ScreenAdaper.height(10),),
+                                  Text('${_livestreamingdetail.data.bookCount}已预约', style: TextStyle(color: Color(0xfffA2A2A2), fontSize: ScreenAdaper.size(22)),),
+                                ],
+                              ),
+                              Stack(
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      // 分享
+                                      // InkWell(
+                                      //   onTap: (){
+                                      //     _share(context);
+                                      //   },
+                                      //   child: Image.asset('images/home_image36.png', width: ScreenAdaper.width(44), height: ScreenAdaper.height(44),),
+                                      // )
+                                    ],
                                   ),
-                                ),
+                                  Positioned(
+                                    bottom: 0, right: ScreenAdaper.width(86),
+                                    child: Image.asset('images/home_image41.png', width: ScreenAdaper.width(20), height: ScreenAdaper.height(20),),
+                                  )
+                                ],
                               )
-                            ):Container(),
-                          ],
-                        ),
+                            ],
+                          ),
+                          SizedBox(height: ScreenAdaper.height(40),),
+                          Container(
+                            width: ScreenAdaper.width(690), height: ScreenAdaper.height(1),color: Color(0xffEFEFEF),
+                          ),
+                        ],
                       ),
-                      Container(
-                        padding: EdgeInsetsDirectional.fromSTEB(ScreenAdaper.width(30), ScreenAdaper.height(20), ScreenAdaper.width(30), 0), 
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('${_livestreamingdetail.data.title}', style: TextStyle(color: Color(0xfff000000), fontSize: ScreenAdaper.size(32), fontWeight: FontWeight.bold),
-                              maxLines: 2, overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(height: ScreenAdaper.height(8),),
-                            Text('讲师：${_livestreamingdetail.data.teacherName}', style: TextStyle(color: Color(0xfff000000), fontSize: ScreenAdaper.size(22)),),
-                            SizedBox(height: ScreenAdaper.height(20),),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Column(
-                                  children: <Widget>[
-                                    SizedBox(height: ScreenAdaper.height(10),),
-                                    Text('${_livestreamingdetail.data.bookCount}已预约', style: TextStyle(color: Color(0xfffA2A2A2), fontSize: ScreenAdaper.size(22)),),
-                                  ],
-                                ),
-                                Stack(
-                                  children: <Widget>[
-                                    Row(
-                                      children: <Widget>[
-                                        // 分享
-                                        // InkWell(
-                                        //   onTap: (){
-                                        //     _share(context);
-                                        //   },
-                                        //   child: Image.asset('images/home_image36.png', width: ScreenAdaper.width(44), height: ScreenAdaper.height(44),),
-                                        // )
-                                      ],
-                                    ),
-                                    Positioned(
-                                      bottom: 0, right: ScreenAdaper.width(86),
-                                      child: Image.asset('images/home_image41.png', width: ScreenAdaper.width(20), height: ScreenAdaper.height(20),),
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                            SizedBox(height: ScreenAdaper.height(40),),
-                            Divider(height: ScreenAdaper.height(1),),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SliverPersistentHeader(
-                  pinned: true, //是否固定在顶部
-                  floating: true,
-                  delegate: _SliverAppBarDelegate(
-                    minHeight: 50, //收起的高度
-                    maxHeight: 50, //展开的最大高度
-                    child: DefaultTabController(
+                    ),
+                    
+                    DefaultTabController(
                       length: this._tab.length,
                       child: Container(
-                        width: double.infinity, color: Color(0xffFFFFFF),
+                        width: ScreenAdaper.width(750), 
+                        // color: Colors.red,
+                        padding: EdgeInsets.symmetric(vertical: ScreenAdaper.height(25)),
                         child: TabBar(
                           tabs: this._tab.map((item){
                             return Container(
@@ -439,20 +448,15 @@ class _LivecoursePageState extends State<LivecoursePage> with SingleTickerProvid
                         ),
                       ),
                     ),
-                  )
+                  ],
                 ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    return _tabIndex == 0 ? _introduction() : _evaluation();
-                    // return _tabIndex == 0 ? _introduction() : _tabIndex == 1 ? _directory() : _evaluation();
-                  }, childCount: 1,),
-                )
-              ]
+              ),
             ),
             // 评价输入框
             _tabIndex == 1 ? _input() : Container(),
           ],
         ) : Loading(),
+        
       ),
     );
   }
@@ -524,7 +528,7 @@ class _LivecoursePageState extends State<LivecoursePage> with SingleTickerProvid
   Widget _evaluation(){
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(ScreenAdaper.width(30), 0, ScreenAdaper.width(30), ScreenAdaper.height(98)),
+      padding: EdgeInsets.fromLTRB(ScreenAdaper.width(30), ScreenAdaper.height(20), ScreenAdaper.width(30), ScreenAdaper.height(98)),
       child: this._getchatroomList !=null ?Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -537,22 +541,42 @@ class _LivecoursePageState extends State<LivecoursePage> with SingleTickerProvid
               var item = _getchatroomList[index];
               return Container(
                 width: double.infinity,
-                margin: EdgeInsets.only(bottom: ScreenAdaper.height(23)),
+                margin: EdgeInsets.only(bottom: ScreenAdaper.height(10)),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: item['IsSelf'] ? MainAxisAlignment.end : MainAxisAlignment.start,
                   children: <Widget>[
-                    logoUrl != null ? ClipOval(
+                    !item['IsSelf']? ClipOval(
                       child: SizedBox(
                         width: ScreenAdaper.width(48),
                         child: Image.network('${item['logoUrl']}', fit: BoxFit.fill,),
                       ),
                     ) : Container(),
-                    SizedBox(width: ScreenAdaper.width(10),),
+                    SizedBox(width: ScreenAdaper.width(item['IsSelf']?0:15),),
                     Expanded(
-                      child: Text('${item['Content']}', style: TextStyle(color: Color(item['IsSelf']?0xffFF8636 :0xff000000), fontSize: ScreenAdaper.size(26)),),
-                    )
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: item['IsSelf'] ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('${item['UserName']}', style: TextStyle(color: Color(0xff808080), fontSize: ScreenAdaper.size(26)),),
+                          SizedBox(height: ScreenAdaper.height(5),),
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: ScreenAdaper.width(27), vertical: ScreenAdaper.height(20)),
+                            decoration: BoxDecoration(
+                              color: Color(item['IsSelf']?0xffFF8636 :0xffF8F8F8), borderRadius: BorderRadius.circular(4)
+                            ),
+                            child: Text('${item['Content']}', style: TextStyle(color: Color(item['IsSelf']?0xffFFFFFF :0xff000000), fontSize: ScreenAdaper.size(26)),),
+                          )
+                        ],
+                      )
+                    ),
+                    SizedBox(width: ScreenAdaper.width(item['IsSelf']?15:0),),
+                    item['IsSelf'] && logoUrl != null ? ClipOval(
+                      child: SizedBox(
+                        width: ScreenAdaper.width(48),
+                        child: Image.network('${item['logoUrl']}', fit: BoxFit.fill,),
+                      ),
+                    ) : Container(),
                   ],
-                ),
+                )
               );
             },
           )

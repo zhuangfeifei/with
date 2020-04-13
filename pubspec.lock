@@ -43,6 +43,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.8+1"
+  city_pickers:
+    dependency: "direct main"
+    description:
+      name: city_pickers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.30"
   collection:
     dependency: transitive
     description:
@@ -144,6 +151,11 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_web_plugins:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   fluttertoast:
     dependency: "direct main"
     description:
@@ -157,7 +169,7 @@ packages:
       name: fluwx
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.1+1"
+    version: "1.2.1"
   html:
     dependency: transitive
     description:
@@ -193,6 +205,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1"
+  lpinyin:
+    dependency: transitive
+    description:
+      name: lpinyin
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.9"
   matcher:
     dependency: transitive
     description:
@@ -234,7 +253,7 @@ packages:
       name: permission_handler
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.0"
+    version: "4.2.0+hotfix.3"
   petitparser:
     dependency: transitive
     description:
@@ -257,7 +276,7 @@ packages:
     source: hosted
     version: "2.0.5"
   screen:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: screen
       url: "https://pub.dartlang.org"
@@ -269,7 +288,14 @@ packages:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.4+8"
+    version: "0.5.6+1"
+  shared_preferences_macos:
+    dependency: transitive
+    description:
+      name: shared_preferences_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1+4"
   shared_preferences_platform_interface:
     dependency: transitive
     description:
@@ -277,6 +303,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  shared_preferences_web:
+    dependency: transitive
+    description:
+      name: shared_preferences_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2+3"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -365,7 +398,7 @@ packages:
       name: video_player
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.4+2"
+    version: "0.10.6"
   video_player_platform_interface:
     dependency: transitive
     description:
@@ -373,6 +406,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  video_player_web:
+    dependency: transitive
+    description:
+      name: video_player_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   xml:
     dependency: transitive
     description:
@@ -382,4 +422,4 @@ packages:
     version: "3.5.0"
 sdks:
   dart: ">=2.5.0 <3.0.0"
-  flutter: ">=1.10.0 <2.0.0"
+  flutter: ">=1.12.13+hotfix.4 <2.0.0"

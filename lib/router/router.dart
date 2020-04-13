@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../pages/login/starts_page.dart';
 import '../pages/login/start_page.dart';
 import '../pages/login/registered_page.dart';
 import '../pages/login/setpassword_page.dart';
@@ -30,9 +31,12 @@ import '../pages/my/myCoupon_page.dart';
 import '../pages/my/myCollection_page.dart';
 import '../pages/my/myCow_page.dart';
 import '../pages/my/exchangeCoupon_page.dart';
+import '../pages/my/setup_page.dart';
+import '../pages/my/personal_page.dart';
 
 final routes = {
-  '/': (contxt) => StartPage(),
+  '/': (contxt) => StartsPage(),
+  '/starts': (contxt) => StartPage(),
   '/registered': (contxt) => RegisteredPage(),   // 注册
   '/setpassword': (contxt) => SetpasswordPage(),  // 设置密码
   '/login': (contxt) => LoginPage(),                  // 手机号登录
@@ -58,6 +62,8 @@ final routes = {
   '/exchangeCoupon': (contxt) => ExchangeCouponPage(), // 优惠券
   '/myCollection': (contxt) => MyCollectionPage(), // 我的收藏
   '/myCow': (contxt, {arguments}) => MyCowPage(arguments: arguments), // 我的牛币
+  '/setup': (contxt) => SetupPage(), // 设置
+  '/personal': (contxt) => PersonalPage(), // 个人资料
 };
 
 var onGenerateRoute = (RouteSettings settings) {

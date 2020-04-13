@@ -38,13 +38,15 @@ dependencies:
   chewie: ^0.9.8+1
   flutter_html_widget: ^0.0.2
   flutter_ijkplayer: ^0.3.5+1
-  fluwx: ^1.2.1+1
+  fluwx: 1.2.1
   # 开启权限
   permission_handler: ^4.1.0
   # 保存图片
   image_gallery_saver: ^1.2.2
   # 左滑菜单插件
   left_scroll_actions: ^1.2.1
+  screen: ^0.0.5
+  city_pickers: ^0.1.30
 
 dev_dependencies:
   flutter_test:
@@ -166,10 +168,12 @@ flutter:
    - images/home_image96.png
    - images/home_image97.png
    - images/home_image98.png
+   - images/home_image100.png
    - images/Lack_image01.png
    - images/close_image30.png
    - images/close_image31.png
    - images/kuajinggonglve_image27.png
+   - images/link.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
